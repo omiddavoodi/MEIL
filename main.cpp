@@ -1,13 +1,13 @@
 // ARIT.cpp : Testing the aritmathic operation codes
 // As of now, it doesn't support parantheses, spaces, tabs and lot of operands.
 
-#include "aritmathic.h"
-#include "interpreter.h"
+#include "Interpreter.h"
 
 
 int main()
 {
 	while (true) {
+		Interpreter testInterpreter ;
 		std::string inputString = "" ;
 		std::cout << ">>" ;
 		testInterpreter.doInterpretion(inputString); // the parser shuld be called in this function
