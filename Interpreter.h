@@ -10,6 +10,7 @@ class Interpreter {
 	public :
 		interpreter () ;
 		void doInterpretion (std::string & ) ;
+		bool hasIf ( std::string & ) ;
 
 };
 

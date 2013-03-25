@@ -15,3 +15,4 @@ bool Interpreter::inputString ( std::string & inString ) {
 		inString.append(temp);
 	}
 }
+bool Interpreter::hasIf ( std::string & ) {}
