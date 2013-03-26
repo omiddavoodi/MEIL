@@ -1,7 +1,13 @@
-#ifndef VARIABLE_H
-#define VARIABLE_H
-
+#ifndef _VECTOR_H_
 #include <vector>
+#endif
+
+#ifndef _STRING_H_
+#include <string>
+#endif
+
+#ifndef VARIABLE_H
+#define VARIABLE_H 0
 
 class Variable {
 
