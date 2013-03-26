@@ -156,7 +156,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		else
 			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
 		temp = std::string(temp2.data());
-		std::cout << temp << "\n";
+		//std::cout << temp << "\n";
 	}
 
 	while (number_of_char(temp, '+') > 0 || number_of_char(temp, '-') > 0)
@@ -207,7 +207,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		else
 			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
 		temp = std::string(temp2.data());
-		std::cout << temp << "\n";
+		//std::cout << temp << "\n";
 	}
 
 	return temp.data();
