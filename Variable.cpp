@@ -1,3 +1,15 @@
+Variable::Variable () {
+
+	varType = new std::string [4] ;
+	typeNum = 4 ;
+	varType[1] = "int";
+	varType[2] = "float";
+	varType[3] = "char";
+	varType[4] = "string";
+
+}
+
+
 //get methods
 
 int Variable::getIntValue (std::string name ) {
@@ -47,6 +59,11 @@ std::string Variable::getStringValue (std::string name ) {
 	}
 	return NULL ;
 
+}
+
+int Variable::getTypeNum ( ) {
+
+	return typeNum ;
 }
 
 //set methods
@@ -171,7 +188,7 @@ bool Variable::isMultiDef (std::string name ) {
 	return false ;
 
 }
-std::String getType (std::sting name ) {
+std::String Variable::getType (std::sting name ) {
 
 	int i = 0 ;
 	while ( i < intValueName.size() ) {
@@ -199,4 +216,8 @@ std::String getType (std::sting name ) {
 	}
 	return NULL ;
 	
+}
+std::string Variable::type ( int i ) {
+
+	return varType [i] ;
 }

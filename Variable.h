@@ -14,16 +14,20 @@ class Variable {
 		std::vector <std::string> floatValueName  ;
 		std::vector <std::string> charValueName   ;
 		std::vector <std::string> stringValueName ;
+
+		std::string *             varType ;
+		int                       typeNum ;
 	public :
 
 		//constructor
-		Variable () {}
+		Variable () ;
 
 		//get methods
 		int         getIntValue    (std::string ) ;
 		float       getFloatValue  (std::string ) ;
 		char        getCharValue   (std::string ) ;
 		std::string getStringValue (std::string ) ;
+		int         getTypeNum     (            ) ;
 		
 		//set methods
 		bool        setIntValue    (std::string , int         ) ;
@@ -38,6 +42,7 @@ class Variable {
 		bool        addStringValue (std::string , std::string ) ;
 		bool        isMultiDef     (std::string               ) ;
 		std::string getType        (std::string               ) ;
+		std::string type           (int                       ) ;
 		
 };
 
