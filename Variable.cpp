@@ -11,6 +11,17 @@ Variable::Variable () {
 
 
 //get methods
+#ifndef _VARIABLE_H_
+#include "Variable.h"
+#endif
+
+#ifndef _STRING_H_
+#include <string>
+#endif
+
+#ifndef _VECTOR_H_
+#include <vector>
+#endif
 
 int Variable::getIntValue (std::string name ) {
 
@@ -154,10 +165,9 @@ bool Variable::addStringValue (std::string name , std::string value ) {
 
 	if ( isMultiDef ( name ) ) 
 		return false ;
-	stringValue.push_back (value ) ;
-	stringValueName.pushBack (name ) ;
+		stringValue.push_back (value ) ;
+		stringValueName.push_back (name ) ;
 	return true ;
-
 }
 bool Variable::isMultiDef (std::string name ) {
 
@@ -188,7 +198,12 @@ bool Variable::isMultiDef (std::string name ) {
 	return false ;
 
 }
+<<<<<<< HEAD
 std::String Variable::getType (std::sting name ) {
+=======
+
+std::string Variable::getType (std::string name ) {
+>>>>>>> a99c29f1799237d3aaa704c89c386b498bb027b2
 
 	int i = 0 ;
 	while ( i < intValueName.size() ) {

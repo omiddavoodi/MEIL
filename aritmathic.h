@@ -9,10 +9,13 @@ class Aritmathic
 {
 	private:
 		int number_of_char(std::string base, char token);
+		int find_index_minus(std::string base, int current);
 		int find_index(std::string base, int current, bool next = 1);
 		char order_of_operands(int a1, int a2);
 		char order_of_operands(int a1, int a2, int a3);
-		int aritmathic_no_parantheses_int(std::string arit);
+		int* find_parantheses(std::string arit);
+		std::string distribute_low_operands(std::string arit);
+		std::string aritmathic_no_parantheses_int(std::string arit);
 
 	public:
 		Aritmathic::Aritmathic()
