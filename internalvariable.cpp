@@ -569,3 +569,108 @@ InternalVariable InternalVariable::operator%(InternalVariable other)
 	}
 	return (*this); 
 }
+
+long double double_pow(int a, int b)
+{
+	long double res = 1.0;
+	if (b >= 0)
+	{
+		for (int i = 0; i < b - 1; ++i)
+		{
+			res *= a;
+		}
+	}
+	else
+	{
+		for (int i = 0; i > b; --i)
+		{
+			res /= a;
+		}
+	}
+	return res;
+}
+
+long long simple_pow (int a, int b)
+{
+	long long res = 1;
+	for (int i = 0; i < b; ++i)
+	{
+		res *= a;
+	}
+	return res;
+}
+
+bool has_char(std::string str, char ch)
+{
+	int size = str.size();
+	for (int i = 0; i < size; ++i)
+	{
+		if (str[i] == ch)
+			return true;
+	}
+	return false;
+}
+
+InternalVariable str_to_var(std::string str)
+{
+	if (has_char(str,'"'))
+	{
+		return InternalVariable(str.substr(1,str.size()-2));
+	}
+	else
+	{
+		int size = str.size(), dot = str.find('.');
+		if (dot >= 0)
+		{
+			long double res = 0.0;
+			for (int i = 0; i < size; ++i)
+			{
+				if (str[i] == '1')
+					res += (double_pow(10,(dot - i)));
+				else if (str[i] == '2')
+					res += (2.0 * double_pow(10,(dot - i)));
+				else if (str[i] == '3')
+					res += (3.0 * double_pow(10,(dot - i)));
+				else if (str[i] == '4')
+					res += (4.0 * double_pow(10,(dot - i)));
+				else if (str[i] == '5')
+					res += (5.0 * double_pow(10,(dot - i)));
+				else if (str[i] == '6')
+					res += (6.0 * double_pow(10,(dot - i)));
+				else if (str[i] == '7')
+					res += (7.0 * double_pow(10,(dot - i)));
+				else if (str[i] == '8')
+					res += (8.0 * double_pow(10,(dot - i)));
+				else if (str[i] == '9')
+					res += (9.0 * double_pow(10,(dot - i)));
+			}
+			return InternalVariable(res);
+		}
+		else
+		{
+			long long res = 0;
+			for (int i = 0; i < size; ++i)
+			{
+				if (str[i] == '1')
+					res += (simple_pow(10,(size - i - 1)));
+				else if (str[i] == '2')
+					res += (2 * simple_pow(10,(size - i - 1)));
+				else if (str[i] == '3')
+					res += (3 * simple_pow(10,(size - i - 1)));
+				else if (str[i] == '4')
+					res += (4 * simple_pow(10,(size - i - 1)));
+				else if (str[i] == '5')
+					res += (5 * simple_pow(10,(size - i - 1)));
+				else if (str[i] == '6')
+					res += (6 * simple_pow(10,(size - i - 1)));
+				else if (str[i] == '7')
+					res += (7 * simple_pow(10,(size - i - 1)));
+				else if (str[i] == '8')
+					res += (8 * simple_pow(10,(size - i - 1)));
+				else if (str[i] == '9')
+					res += (9 * simple_pow(10,(size - i - 1)));
+			}
+			return InternalVariable(res);
+		}
+	}
+}

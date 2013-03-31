@@ -77,7 +77,7 @@ class InternalVariable {
 		InternalVariable operator%(long long);
 		InternalVariable operator%(InternalVariable);
 
-		friend std::string str_to_var(InternalVariable);
+		friend InternalVariable str_to_var(std::string);
 };
 
 #endif
