@@ -6,6 +6,10 @@
 #include "aritmathic.h"
 #endif
 
+#ifndef _INTERNALVARIABLE_H_
+#include "internalvariable.h"
+#endif
+
 #include <iostream>
 
 int Aritmathic::number_of_char(std::string base, char token)
@@ -121,33 +125,27 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		else current = currentpercent;
 
 		int pre_index = find_index(temp, current ,0), next_index = find_index(temp, current ,1);
-		int next = atoi(temp.substr(current + 1, next_index - current - 1).data());
-		int previous = atoi(temp.substr(pre_index, current).data());
+		InternalVariable next = str_to_var(temp.substr(current + 1, next_index - current - 1).data());
+		InternalVariable previous = str_to_var(temp.substr(pre_index, current - 1).data());
 		std::string temp_result;
-		int t_res;
+		InternalVariable t_res;
 		if (order == 1)
 		{
-			char* s = new char[64];
 			t_res = next * previous;
-			temp_result = _itoa(t_res, s, 10);
-			if (t_res >= 0) temp_result = std::string("+").append(temp_result.data());
-			delete s;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 		else if (order == 2)
 		{
-			char* s = new char[64];
 			t_res = previous / next;
-			temp_result = _itoa(t_res, s, 10);
-			if (t_res >= 0) temp_result = std::string("+").append(temp_result.data());
-			delete s;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 		else
 		{
-			char* s = new char[64];
 			t_res = previous % next;
-			temp_result = _itoa(t_res, s, 10);
-			if (t_res >= 0) temp_result = std::string("+").append(temp_result.data());
-			delete s;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 
 		std::string temp2("");
@@ -179,26 +177,22 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			return temp;
 
 		int pre_index = find_index(temp, current ,0), next_index = find_index(temp, current ,1);
-		int next = atoi(temp.substr(current + 1, next_index - current - 1).data());
-		int previous = atoi(temp.substr(pre_index, current).data());
+		InternalVariable next = str_to_var(temp.substr(current + 1, next_index - current - 1).data());
+		InternalVariable previous = str_to_var(temp.substr(pre_index, current).data());
 
 		std::string temp_result;
-		int t_res;
+		InternalVariable t_res;
 		if (order == 1)
 		{
-			char* s = new char[64];
 			t_res = next + previous;
-			temp_result = _itoa(t_res, s, 10);
-			if (t_res >= 0) temp_result = std::string("+").append(temp_result.data());
-			delete s;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 		else if (order == 2)
 		{
-			char* s = new char[64];
 			t_res = previous - next;
-			temp_result = _itoa(t_res, s, 10);
-			if (t_res >= 0) temp_result = std::string("+").append(temp_result.data());
-			delete s;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 
 		std::string temp2("");

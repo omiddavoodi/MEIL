@@ -7,11 +7,9 @@
 #include <string>
 #endif
 
-#ifndef _IOSTREAM_H_
-#include <iostream>
-#endif
-
+#ifndef _SSTREAM_H_
 #include <sstream>
+#endif
 
 InternalVariable::InternalVariable(bool value)
 {
@@ -556,10 +554,10 @@ InternalVariable InternalVariable::operator%(InternalVariable other)
 	switch (other.value_type)
 	{
 		case Boolean:
-			return (*this) / other.get_bool_value(); 
+			return (*this) % other.get_bool_value(); 
 
 		case Integer:
-			return (*this) / other.get_int_value(); 
+			return (*this) % other.get_int_value(); 
 
 		case Float:
 			return (*this); 
@@ -568,6 +566,18 @@ InternalVariable InternalVariable::operator%(InternalVariable other)
 			return (*this); 
 	}
 	return (*this); 
+}
+
+bool InternalVariable::positive()
+{
+	if ((this->get_type() == Boolean) || (this->get_type() == String))
+		return true;
+	else if ((this->get_type() == Integer) && (this->get_int_value() >= 0))
+		return true;
+	else if ((this->get_type() == Float) && (this->get_float_value() >= 0.0))
+		return true;
+	else
+		return false;
 }
 
 long double double_pow(int a, int b)
@@ -643,6 +653,8 @@ InternalVariable str_to_var(std::string str)
 					res += (8.0 * double_pow(10,(dot - i)));
 				else if (str[i] == '9')
 					res += (9.0 * double_pow(10,(dot - i)));
+				else if (str[i] == '-')
+					res *= -1;
 			}
 			return InternalVariable(res);
 		}
@@ -669,8 +681,40 @@ InternalVariable str_to_var(std::string str)
 					res += (8 * simple_pow(10,(size - i - 1)));
 				else if (str[i] == '9')
 					res += (9 * simple_pow(10,(size - i - 1)));
+				else if (str[i] == '-')
+					res *= -1;
 			}
 			return InternalVariable(res);
 		}
+	}
+}
+
+std::string var_to_str(InternalVariable var)
+{
+	if (var.get_type() == Boolean)
+	{
+		if (var.get_bool_value() == 0)
+		{
+			return std::string("0");
+		}
+		else
+		{
+			return std::string("1");
+		}
+	}
+	else if (var.get_type() == Integer)
+	{
+		char* s = new char[64];
+		return _itoa(var.get_int_value(), s, 10);
+	}
+	else if (var.get_type() == Float)
+	{
+		std::ostringstream temp;
+		temp << var.get_float_value();
+		return std::string(temp.str());
+	}
+	else
+	{
+		return std::string("\"").append(var.get_string_value()).append(std::string("\""));
 	}
 }
