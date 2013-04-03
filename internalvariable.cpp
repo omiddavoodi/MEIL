@@ -11,6 +11,8 @@
 #include <sstream>
 #endif
 
+#include <iostream>
+
 InternalVariable::InternalVariable(bool value)
 {
 	this->value_type = Boolean;
@@ -656,6 +658,7 @@ InternalVariable str_to_var(std::string str)
 				else if (str[i] == '-')
 					res *= -1;
 			}
+			//std::cout << str.data() << " " << res << " XXXXXXXXXXXXXXXXXXX \n";
 			return InternalVariable(res);
 		}
 		else
@@ -684,6 +687,7 @@ InternalVariable str_to_var(std::string str)
 				else if (str[i] == '-')
 					res *= -1;
 			}
+			//std::cout << str.data() << " " << res << " XXXXXXXXXXXXXXXXXXX \n";
 			return InternalVariable(res);
 		}
 	}

@@ -2,6 +2,10 @@
 #include <string>
 #endif
 
+#ifndef _INTERNALVARIABLE_H_
+#include "internalvariable.h"
+#endif
+
 #ifndef _ARITMATHIC_H_
 #define _ARITMATHIC_H_ 0
 
@@ -21,6 +25,6 @@ class Aritmathic
 		Aritmathic::Aritmathic()
 		{
 		};
-		int parse_aritmathic(std::string arit);
+		InternalVariable parse_aritmathic(std::string arit);
 };
 #endif

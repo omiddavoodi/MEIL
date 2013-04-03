@@ -126,7 +126,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 
 		int pre_index = find_index(temp, current ,0), next_index = find_index(temp, current ,1);
 		InternalVariable next = str_to_var(temp.substr(current + 1, next_index - current - 1).data());
-		InternalVariable previous = str_to_var(temp.substr(pre_index, current - 1).data());
+		InternalVariable previous = str_to_var(temp.substr(pre_index, current - pre_index).data());
 		std::string temp_result;
 		InternalVariable t_res;
 		if (order == 1)
@@ -178,7 +178,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 
 		int pre_index = find_index(temp, current ,0), next_index = find_index(temp, current ,1);
 		InternalVariable next = str_to_var(temp.substr(current + 1, next_index - current - 1).data());
-		InternalVariable previous = str_to_var(temp.substr(pre_index, current).data());
+		InternalVariable previous = str_to_var(temp.substr(pre_index, current - pre_index).data());
 
 		std::string temp_result;
 		InternalVariable t_res;
@@ -280,7 +280,7 @@ int* Aritmathic::find_parantheses(std::string arit)
 	return res;
 }
 
-int Aritmathic::parse_aritmathic(std::string arit)
+InternalVariable Aritmathic::parse_aritmathic(std::string arit)
 {
 	//still WIP (work in progress).
 	//TODO: add support for other operands: &&, ||, <, >, ^, ==, etc.
@@ -300,12 +300,12 @@ int Aritmathic::parse_aritmathic(std::string arit)
 			temp_par--;
 	}
 	if (temp_par != 0)
-		return 0;
+		return (bool)0;
 	else
 	{
 		if (!has_par)
 		{
-			return atoi(aritmathic_no_parantheses_int(distribute_low_operands(arit)).data());
+			return str_to_var(aritmathic_no_parantheses_int(distribute_low_operands(arit)).data());
 		}
 		else
 		{
@@ -322,8 +322,8 @@ int Aritmathic::parse_aritmathic(std::string arit)
 					temp2.append(temp_result).append(last_par);
 				temp = std::string(temp2.data());
 			}
-			return atoi(aritmathic_no_parantheses_int(distribute_low_operands(temp)).data());
+			return str_to_var(aritmathic_no_parantheses_int(distribute_low_operands(temp)).data());
 		}
 	}
-	return 0;
+	return (bool)0;
 }
