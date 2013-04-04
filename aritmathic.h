@@ -14,7 +14,7 @@ class Aritmathic
 	private:
 		int number_of_char(std::string base, char token);
 		int find_index_minus(std::string base, int current);
-		int find_index(std::string base, int current, bool next = 1);
+		int find_index(std::string base, int current, bool next = 1, int tokensize = 1);
 		char order_of_operands(int a1, int a2);
 		char order_of_operands(int a1, int a2, int a3);
 		int* find_parantheses(std::string arit);

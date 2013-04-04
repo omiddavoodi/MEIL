@@ -50,6 +50,7 @@ class InternalVariable {
 		//others
 		void deep_copy(InternalVariable);
 		bool positive();
+		InternalVariable not();
 
 		InternalVariable& operator=(long long);
 		InternalVariable& operator=(long double);
@@ -77,6 +78,13 @@ class InternalVariable {
 		InternalVariable operator/(InternalVariable);
 		InternalVariable operator%(long long);
 		InternalVariable operator%(InternalVariable);
+		InternalVariable operator>(InternalVariable);
+		InternalVariable operator<(InternalVariable);
+		InternalVariable operator==(InternalVariable);
+		InternalVariable operator<=(InternalVariable);
+		InternalVariable operator>=(InternalVariable);
+		InternalVariable operator&&(InternalVariable);
+		InternalVariable operator||(InternalVariable);
 };
 
 InternalVariable str_to_var(std::string);

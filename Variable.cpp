@@ -1,3 +1,15 @@
+#ifndef _VARIABLE_H_
+#include "Variable.h"
+#endif
+
+#ifndef _STRING_H_
+#include <string>
+#endif
+
+#ifndef _VECTOR_H_
+#include <vector>
+#endif
+
 Variable::Variable () {
 
 	varType = new std::string [4] ;
@@ -11,17 +23,6 @@ Variable::Variable () {
 
 
 //get methods
-#ifndef _VARIABLE_H_
-#include "Variable.h"
-#endif
-
-#ifndef _STRING_H_
-#include <string>
-#endif
-
-#ifndef _VECTOR_H_
-#include <vector>
-#endif
 
 int Variable::getIntValue (std::string name ) {
 

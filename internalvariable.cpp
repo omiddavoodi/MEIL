@@ -570,6 +570,216 @@ InternalVariable InternalVariable::operator%(InternalVariable other)
 	return (*this); 
 }
 
+InternalVariable InternalVariable::operator>(InternalVariable other)
+{
+	switch (other.value_type)
+	{
+		case Boolean:
+			if (this->get_type() == Boolean)
+				return (long long)(this->get_bool_value() > other.get_bool_value());
+			else if (this->get_type() == Integer)
+				return (long long)(this->get_int_value() > (long long)(other.get_bool_value()));
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() > (long double)(other.get_bool_value()));
+			else if (this->get_type() == String)
+				return (long long)0;
+
+		case Integer:
+			if (this->get_type() == Boolean)
+				return (long long)((long long)(this->get_bool_value()) > other.get_int_value());
+			else if (this->get_type() == Integer)
+				return (long long)(this->get_int_value() > other.get_int_value());
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() > (long double)(other.get_int_value()));
+			else if (this->get_type() == String)
+				return (long long)0;
+
+		case Float:
+			if (this->get_type() == Boolean)
+				return (long long)((long double)(this->get_bool_value()) > other.get_float_value());
+			else if (this->get_type() == Integer)
+				return (long long)((long double)(this->get_int_value()) > other.get_float_value());
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() > other.get_float_value());
+			else if (this->get_type() == String)
+				return (long long)0;
+
+		case String:
+			return (long long)(this->get_string_value().compare(other.get_string_value())>0); 
+	}
+	return (long long)0; 
+}
+
+InternalVariable InternalVariable::operator<(InternalVariable other)
+{
+	switch (other.value_type)
+	{
+		case Boolean:
+			if (this->get_type() == Boolean)
+				return (long long)(this->get_bool_value() < other.get_bool_value());
+			else if (this->get_type() == Integer)
+				return (long long)(this->get_int_value() < (long long)(other.get_bool_value()));
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() < (long double)(other.get_bool_value()));
+			else if (this->get_type() == String)
+				return (long long)0;
+
+		case Integer:
+			if (this->get_type() == Boolean)
+				return (long long)((long long)(this->get_bool_value()) < other.get_int_value());
+			else if (this->get_type() == Integer)
+				return (long long)(this->get_int_value() < other.get_int_value());
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() < (long double)(other.get_int_value()));
+			else if (this->get_type() == String)
+				return (long long)0;
+
+		case Float:
+			if (this->get_type() == Boolean)
+				return (long long)((long double)(this->get_bool_value()) < other.get_float_value());
+			else if (this->get_type() == Integer)
+				return (long long)((long double)(this->get_int_value()) < other.get_float_value());
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() < other.get_float_value());
+			else if (this->get_type() == String)
+				return (long long)0;
+
+		case String:
+			return (long long)(this->get_string_value().compare(other.get_string_value())<0); 
+	}
+	return (long long)0; 
+}
+
+InternalVariable InternalVariable::operator==(InternalVariable other)
+{
+	switch (other.value_type)
+	{
+		case Boolean:
+			if (this->get_type() == Boolean)
+				return (long long)(this->get_bool_value() == other.get_bool_value());
+			else if (this->get_type() == Integer)
+				return (long long)(this->get_int_value() == (long long)(other.get_bool_value()));
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() == (long float)(other.get_bool_value()));
+			else if (this->get_type() == String)
+				return (long long)0;
+
+		case Integer:
+			if (this->get_type() == Boolean)
+				return (long long)((long long)(this->get_bool_value()) == other.get_int_value());
+			else if (this->get_type() == Integer)
+				return (long long)(this->get_int_value() == other.get_int_value());
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() == (long float)(other.get_int_value()));
+			else if (this->get_type() == String)
+				return (long long)0;
+
+		case Float:
+			if (this->get_type() == Boolean)
+				return (long long)((long double)(this->get_bool_value()) == other.get_float_value());
+			else if (this->get_type() == Integer)
+				return (long long)((long double)(this->get_int_value()) == other.get_float_value());
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() == other.get_float_value());
+			else if (this->get_type() == String)
+				return (long long)0;
+
+		case String:
+			return (long long)(this->get_string_value().compare(other.get_string_value())==0); 
+	}
+	return (long long)0; 
+}
+
+InternalVariable InternalVariable::operator<=(InternalVariable other)
+{
+	return (long long)(((*this)==other).get_int_value() || ((*this)<other).get_int_value());
+}
+
+InternalVariable InternalVariable::operator>=(InternalVariable other)
+{
+	return (long long)(((*this)==other).get_int_value() || ((*this)>other).get_int_value());
+}
+
+InternalVariable InternalVariable::operator&&(InternalVariable other)
+{
+	switch (other.value_type)
+	{
+		case Boolean:
+			if (this->get_type() == Boolean)
+				return (long long)(this->get_bool_value() && other.get_bool_value());
+			else if (this->get_type() == Integer)
+				return (long long)(this->get_int_value() && (long long)(other.get_bool_value()));
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() && (long float)(other.get_bool_value()));
+			else if (this->get_type() == String)
+				return (long long)((long long)this->get_string_value().size() && (long long)other.get_bool_value());
+
+		case Integer:
+			if (this->get_type() == Boolean)
+				return (long long)((long long)(this->get_bool_value()) && other.get_int_value());
+			else if (this->get_type() == Integer)
+				return (long long)(this->get_int_value() && other.get_int_value());
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() && (long float)(other.get_int_value()));
+			else if (this->get_type() == String)
+				return (long long)((long long)this->get_string_value().size() && other.get_int_value());
+
+		case Float:
+			if (this->get_type() == Boolean)
+				return (long long)((long double)(this->get_bool_value()) && other.get_float_value());
+			else if (this->get_type() == Integer)
+				return (long long)((long double)(this->get_int_value()) && other.get_float_value());
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() && other.get_float_value());
+			else if (this->get_type() == String)
+				return (long long)((long double)this->get_string_value().size() && other.get_float_value());
+
+		case String:
+			return (long long)(this->get_string_value().size() && other.get_string_value().size()); 
+	}
+	return (long long)0; 
+}
+
+InternalVariable InternalVariable::operator||(InternalVariable other)
+{
+	switch (other.value_type)
+	{
+		case Boolean:
+			if (this->get_type() == Boolean)
+				return (long long)(this->get_bool_value() || other.get_bool_value());
+			else if (this->get_type() == Integer)
+				return (long long)(this->get_int_value() || (long long)(other.get_bool_value()));
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() || (long float)(other.get_bool_value()));
+			else if (this->get_type() == String)
+				return (long long)((long long)this->get_string_value().size() || (long long)other.get_bool_value());
+
+		case Integer:
+			if (this->get_type() == Boolean)
+				return (long long)((long long)(this->get_bool_value()) || other.get_int_value());
+			else if (this->get_type() == Integer)
+				return (long long)(this->get_int_value() || other.get_int_value());
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() || (long float)(other.get_int_value()));
+			else if (this->get_type() == String)
+				return (long long)((long long)this->get_string_value().size() || other.get_int_value());
+
+		case Float:
+			if (this->get_type() == Boolean)
+				return (long long)((long double)(this->get_bool_value()) || other.get_float_value());
+			else if (this->get_type() == Integer)
+				return (long long)((long double)(this->get_int_value()) || other.get_float_value());
+			else if (this->get_type() == Float)
+				return (long long)(this->get_float_value() || other.get_float_value());
+			else if (this->get_type() == String)
+				return (long long)((long double)this->get_string_value().size() || other.get_float_value());
+
+		case String:
+			return (long long)(this->get_string_value().size() || other.get_string_value().size()); 
+	}
+	return (long long)0; 
+}
+
 bool InternalVariable::positive()
 {
 	if ((this->get_type() == Boolean) || (this->get_type() == String))
@@ -580,6 +790,18 @@ bool InternalVariable::positive()
 		return true;
 	else
 		return false;
+}
+
+InternalVariable InternalVariable::not()
+{
+	if (this->get_type() == Boolean)
+		return InternalVariable((long long)!this->get_bool_value());
+	else if (this->get_type() == Integer)
+		return InternalVariable((long long)!this->get_int_value());
+	else if (this->get_type() == Float)
+		return InternalVariable((long long)!this->get_float_value());
+	else if (this->get_type() == String)
+		return InternalVariable((long long)!this->get_string_value().size());
 }
 
 long double double_pow(int a, int b)
