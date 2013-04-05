@@ -114,41 +114,56 @@ char Aritmathic::order_of_operands(int a1, int a2, int a3)
 	return 1;
 }
 
+int number_of_nots(std::string base)
+{
+	unsigned int number = 0, length = base.length();
+	for (unsigned int i = 0; i < length; ++i)
+	{
+		if (base[i] == '!')
+			if ((i == (length - 1)) || base[i+1] != '=')
+			++number;
+	}
+	return number;
+}
+
 std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 {
 	std::string temp(arit.data());
 
-	while (number_of_char(temp, '!') > 0)
+	while (number_of_nots(temp) > 0)
 	{
 		int current = temp.find('!');
+		if (temp[current+1] != '=')
+		{
+			int next_index = find_index(temp, current ,1);
+			InternalVariable next = str_to_var(temp.substr(current + 1, next_index - current - 1).data());
+			std::string temp_result;
+			InternalVariable t_res;
 
-		int next_index = find_index(temp, current ,1);
-		InternalVariable next = str_to_var(temp.substr(current + 1, next_index - current - 1).data());
-		std::string temp_result;
-		InternalVariable t_res;
+			t_res = next.not();
 
-		t_res = next.not();
-
-		temp_result = var_to_str(t_res);
-		if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 
 
-		std::string temp2("");
-		if (current > 0)
-			temp2.append(temp.substr(0,current-1)).append(temp_result).append(temp.substr(next_index,temp.size()));
-		else
-			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
-		temp = std::string(temp2.data());
+			std::string temp2("");
+			if (current > 0)
+				temp2.append(temp.substr(0,current-1)).append(temp_result).append(temp.substr(next_index,temp.size()));
+			else
+				temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
+			temp = std::string(temp2.data());
+		}
 		//std::cout << temp << "\n";
 	}
 
-	int currentand = temp.find("&&"), currentor = temp.find("||");
-	while (currentand >= 0 || currentor >= 0)
+	int currentand = temp.find("&&"), currentor = temp.find("||"), currentnotequal = temp.find("!=");
+	while (currentand >= 0 || currentor >= 0 || currentnotequal >= 0)
 	{
 		int current;
-		int order = order_of_operands(currentand, currentor);
+		int order = order_of_operands(currentand, currentor, currentnotequal);
 		if (order == 1) current = currentand;
-		else current = currentor;
+		else if (order == 2) current = currentor;
+		else current = currentnotequal;
 
 		int pre_index = find_index(temp, current ,0, 2), next_index = find_index(temp, current ,1, 2);
 		InternalVariable next = str_to_var(temp.substr(current + 2, next_index - current - 2).data());
@@ -161,9 +176,15 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			temp_result = var_to_str(t_res);
 			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
-		else
+		else if (order == 2)
 		{
 			t_res = previous || next;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
+		}
+		else
+		{
+			t_res = (previous == next).not();
 			temp_result = var_to_str(t_res);
 			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
@@ -177,6 +198,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		//std::cout << temp << "\n";
 		currentand = temp.find("&&");
 		currentor = temp.find("||");
+		currentnotequal = temp.find("!=");
 	}
 
 	int currentequal = temp.find("=="), currentmore = temp.find(">="), currentless = temp.find("<=");
