@@ -945,3 +945,24 @@ std::string var_to_str(InternalVariable var)
 		return std::string("\"").append(var.get_string_value()).append(std::string("\""));
 	}
 }
+
+bool InternalVariable::condition()
+{
+	if(this->value_type == Boolean)
+	{
+		return this->bool_value;
+	}
+	else if (this->value_type == Integer)
+	{
+		return (this->int_value != 0 ? true : false);
+	}
+	else if (this->value_type == Float)
+	{
+		return (this->float_value != 0.0 ? true : false);
+	}
+	else
+	{
+		return (this->string_value.size() != 0 ? true : false);
+	}
+	return false;
+}

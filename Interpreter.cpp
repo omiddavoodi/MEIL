@@ -142,6 +142,7 @@ InternalVariable Interpreter::do_arit(std::string statement)
 	// InternalVariable(-13.7);
 	// you must use it for the calculation in your work. e.g. "m = 5-x*(y+1)" must change the value of m 
 	//(using this->variable_table.change_var()) to -13.7  
+	// see var_statement() for something very similar
 	unsigned int size = statement.size();
 	std::string level3 = statement;
 	Token temp;
@@ -172,7 +173,7 @@ void Interpreter::var_statement(std::string statement)
 		this->variable_table.add_var(remove_whitespaces(level2.substr(0,level2.size()-1)));
 	}
 	else
-	{
+	{	//if we are going to set the value as well.
 		std::string name = remove_whitespaces(level2.substr(0,equal));
 		this->variable_table.add_var(name);
 		this->variable_table.change_var(name, do_arit(level2.substr(equal+1,end-equal-1)));
@@ -212,6 +213,18 @@ void Interpreter::get_statement(std::string statement)
 	this->variable_table.change_var(name, str_to_var(std::string(input)));
 }
 
+void Interpreter::if_statement(std::string statement)
+{
+	std::string level2 = statement.substr(2, statement.size());
+	int begin = level2.find('{');
+	int end = level2.find('}');
+	InternalVariable condition = do_arit(level2.substr(0,begin));
+	if (condition.condition())
+	{
+		this->code_analyzer(level2.substr(begin + 1, end - begin - 1));
+	}
+}
+
 void Interpreter::statement_analyzer(std::string statement)
 {
 	std::string level1 = remove_whitespaces(statement, true);
@@ -226,6 +239,10 @@ void Interpreter::statement_analyzer(std::string statement)
 	else if (level1.find("get ") == 0)
 	{
 		get_statement(level1);
+	}
+	else if (level1.find("if") == 0 && is_in_string(level1[2], "\t\n ("))
+	{
+		if_statement(level1);
 	}
 	else if (level1.find("pause") == 0)
 	{
@@ -286,7 +303,7 @@ void Interpreter::code_analyzer(std::string code)
 	temp.pos = 0;
 	while (temp.pos + temp.str.size() < size)
 	{
-		temp = get_next_statement(code, ";", temp.pos + temp.str.size());
+		temp = get_next_statement(code, ";}", temp.pos + temp.str.size());
 		statement_analyzer(temp.str);
 	}
 }

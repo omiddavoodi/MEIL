@@ -51,6 +51,7 @@ class InternalVariable {
 		void deep_copy(InternalVariable);
 		bool positive();
 		InternalVariable not();
+		bool condition();
 
 		InternalVariable& operator=(long long);
 		InternalVariable& operator=(long double);

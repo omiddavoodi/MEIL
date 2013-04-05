@@ -29,6 +29,7 @@ class Interpreter
 		void var_statement(std::string statement);
 		void print_statement(std::string statement);
 		void get_statement(std::string statement);
+		void if_statement(std::string statement);
 		void statement_analyzer(std::string statement);
 	public:
 		Interpreter::Interpreter(){};
