@@ -18,7 +18,7 @@ void VarTable::add_var(std::string name)
 {
 	for (unsigned int i = 0; i < this->var_name_table.size(); ++i)
 	{
-		if (this->var_name_table[i].data() == name.data())
+		if (this->var_name_table[i].compare(name) == 0)
 		{
 			return;
 		}

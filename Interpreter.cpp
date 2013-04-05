@@ -218,7 +218,7 @@ void Interpreter::if_statement(std::string statement)
 {
 	std::string level2 = statement.substr(2, statement.size());
 	int begin = level2.find('{');
-	int end = level2.find('}');
+	int end = level2.find_last_of('}');
 	InternalVariable condition = do_arit(level2.substr(0,begin));
 	if (condition.condition())
 	{
@@ -230,7 +230,7 @@ void Interpreter::while_statement(std::string statement)
 {
 	std::string level2 = statement.substr(5, statement.size());
 	int begin = level2.find('{');
-	int end = level2.find('}');
+	int end = level2.find_last_of('}');
 	InternalVariable condition = do_arit(level2.substr(0,begin));
 	while (condition.condition())
 	{
