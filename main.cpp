@@ -15,14 +15,5 @@ int main(int argc, char* argv[])
 		Interpreter inter;
 		inter.code_analyzer (file);
 	}
-	else
-	{
-		std::ifstream ifs("C:/Users/user/Documents/Visual Studio 2008/Projects/ARIT/Debug/code1.mil");
-		std::stringstream buffer;
-		buffer << ifs.rdbuf();
-		std::string file = buffer.str();
-		Interpreter inter;
-		inter.code_analyzer (file);
-	}
 	return 0;
 }
