@@ -58,6 +58,7 @@ class InternalVariable {
 		InternalVariable& operator=(std::string);
 		InternalVariable& operator=(char*);
 		InternalVariable& operator=(InternalVariable);
+		InternalVariable* operator=(InternalVariable*);
 		InternalVariable operator+(bool);
 		InternalVariable operator+(long long);
 		InternalVariable operator+(long double);

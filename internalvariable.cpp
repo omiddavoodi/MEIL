@@ -157,6 +157,11 @@ InternalVariable& InternalVariable::operator=(InternalVariable other)
 	return (*this); 
 }
 
+InternalVariable* InternalVariable::operator=(InternalVariable* other)
+{
+	return (other); 
+}
+
 InternalVariable InternalVariable::operator+(bool value)
 {
 	switch (this->value_type)
@@ -660,7 +665,7 @@ InternalVariable InternalVariable::operator==(InternalVariable other)
 			else if (this->get_type() == Integer)
 				return (long long)(this->get_int_value() == (long long)(other.get_bool_value()));
 			else if (this->get_type() == Float)
-				return (long long)(this->get_float_value() == (long float)(other.get_bool_value()));
+				return (long long)(this->get_float_value() == (long double)(other.get_bool_value()));
 			else if (this->get_type() == String)
 				return (long long)0;
 
@@ -670,7 +675,7 @@ InternalVariable InternalVariable::operator==(InternalVariable other)
 			else if (this->get_type() == Integer)
 				return (long long)(this->get_int_value() == other.get_int_value());
 			else if (this->get_type() == Float)
-				return (long long)(this->get_float_value() == (long float)(other.get_int_value()));
+				return (long long)(this->get_float_value() == (long double)(other.get_int_value()));
 			else if (this->get_type() == String)
 				return (long long)0;
 
@@ -710,7 +715,7 @@ InternalVariable InternalVariable::operator&&(InternalVariable other)
 			else if (this->get_type() == Integer)
 				return (long long)(this->get_int_value() && (long long)(other.get_bool_value()));
 			else if (this->get_type() == Float)
-				return (long long)(this->get_float_value() && (long float)(other.get_bool_value()));
+				return (long long)(this->get_float_value() && (long double)(other.get_bool_value()));
 			else if (this->get_type() == String)
 				return (long long)((long long)this->get_string_value().size() && (long long)other.get_bool_value());
 
@@ -720,7 +725,7 @@ InternalVariable InternalVariable::operator&&(InternalVariable other)
 			else if (this->get_type() == Integer)
 				return (long long)(this->get_int_value() && other.get_int_value());
 			else if (this->get_type() == Float)
-				return (long long)(this->get_float_value() && (long float)(other.get_int_value()));
+				return (long long)(this->get_float_value() && (long double)(other.get_int_value()));
 			else if (this->get_type() == String)
 				return (long long)((long long)this->get_string_value().size() && other.get_int_value());
 
@@ -750,7 +755,7 @@ InternalVariable InternalVariable::operator||(InternalVariable other)
 			else if (this->get_type() == Integer)
 				return (long long)(this->get_int_value() || (long long)(other.get_bool_value()));
 			else if (this->get_type() == Float)
-				return (long long)(this->get_float_value() || (long float)(other.get_bool_value()));
+				return (long long)(this->get_float_value() || (long double)(other.get_bool_value()));
 			else if (this->get_type() == String)
 				return (long long)((long long)this->get_string_value().size() || (long long)other.get_bool_value());
 
@@ -760,7 +765,7 @@ InternalVariable InternalVariable::operator||(InternalVariable other)
 			else if (this->get_type() == Integer)
 				return (long long)(this->get_int_value() || other.get_int_value());
 			else if (this->get_type() == Float)
-				return (long long)(this->get_float_value() || (long float)(other.get_int_value()));
+				return (long long)(this->get_float_value() || (long double)(other.get_int_value()));
 			else if (this->get_type() == String)
 				return (long long)((long long)this->get_string_value().size() || other.get_int_value());
 
@@ -854,6 +859,7 @@ InternalVariable str_to_var(std::string str)
 	else
 	{
 		int size = str.size(), dot = str.find('.');
+		char x = 1;
 		if (dot >= 0)
 		{
 			long double res = 0.0;
@@ -878,10 +884,10 @@ InternalVariable str_to_var(std::string str)
 				else if (str[i] == '9')
 					res += (9.0 * double_pow(10,(dot - i)));
 				else if (str[i] == '-')
-					res *= -1;
+					x *= -1;
 			}
 			//std::cout << str.data() << " " << res << " XXXXXXXXXXXXXXXXXXX \n";
-			return InternalVariable(res);
+			return InternalVariable(res*x);
 		}
 		else
 		{
@@ -907,10 +913,10 @@ InternalVariable str_to_var(std::string str)
 				else if (str[i] == '9')
 					res += (9 * simple_pow(10,(size - i - 1)));
 				else if (str[i] == '-')
-					res *= -1;
+					x *= -1;
 			}
 			//std::cout << str.data() << " " << res << " XXXXXXXXXXXXXXXXXXX \n";
-			return InternalVariable(res);
+			return InternalVariable(res*x);
 		}
 	}
 }
