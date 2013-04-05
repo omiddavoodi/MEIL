@@ -157,11 +157,6 @@ InternalVariable& InternalVariable::operator=(InternalVariable other)
 	return (*this); 
 }
 
-InternalVariable* InternalVariable::operator=(InternalVariable* other)
-{
-	return (other); 
-}
-
 InternalVariable InternalVariable::operator+(bool value)
 {
 	switch (this->value_type)
