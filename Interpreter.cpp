@@ -33,6 +33,55 @@ bool inside_string(std::string base, unsigned int pos)
 	return is;
 }
 
+/*unsigned int find_last_of_in_str(std::string str, char c)
+{
+	unsigned int size = str.size();
+	for (int i = size - 1; i >= 0; --i)
+	{
+		if (str[i] == c && !inside_string(str, i))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+unsigned int find_in_str(std::string str, char c)
+{
+	unsigned int size = str.size();
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		if (str[i] == c && !inside_string(str, i))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+unsigned int find_in_str(std::string str, char* c)
+{
+	std::string cs(c);
+	unsigned int size = str.size();
+	unsigned int csize = cs.size(); 
+	if (size >= csize)
+	{
+		for (unsigned int i = 0; i < size - csize + 1; ++i)
+		{
+			for (unsigned int j = 0; j < csize; ++j)
+			{
+				if (str[i+j] != cs[j] || inside_string(str, i))
+				{
+					break;
+				}
+				if (j == csize - 1)
+					return i;
+			}
+		}
+	}
+	return -1;
+}*/
+
 bool is_whitespace(char c)
 {
 	if (c == ' ' || c == '\n' || c == '\t')
@@ -111,7 +160,7 @@ Token get_next_token(std::string base, char* it, unsigned int pos = 0)
 				ret.pos = start;
 				return ret;
 			}
-			else if (is_in_string(base[i], it))
+			else if (is_in_string(base[i], it) && !inside_string(base, i))
 			{
 				Token ret;
 				ret.str = base.substr(start, i - start);
@@ -167,8 +216,8 @@ InternalVariable Interpreter::do_arit(std::string statement)
 void Interpreter::var_statement(std::string statement)
 {
 	std::string level2 = statement.substr(4, statement.size());
-	int equal = level2.find('=');
-	int end = level2.find(';');
+	int equal = find_in_str(level2, '=');
+	int end = find_in_str(level2, ';');
 	if (equal < 0)
 	{
 		this->variable_table.add_var(remove_whitespaces(level2.substr(0,level2.size()-1)));
@@ -184,7 +233,7 @@ void Interpreter::var_statement(std::string statement)
 void Interpreter::print_statement(std::string statement)
 {
 	std::string level2 = statement.substr(6, statement.size());
-	int end = level2.find(';');
+	int end = find_in_str(level2, ';');
 	InternalVariable output = do_arit(level2.substr(0,end));
 	if (output.get_type() == Boolean)
 	{
@@ -207,7 +256,7 @@ void Interpreter::print_statement(std::string statement)
 void Interpreter::get_statement(std::string statement)
 {
 	std::string level2 = statement.substr(4, statement.size());
-	int end = level2.find(';');
+	int end = find_in_str(level2, ';');
 	std::string name = get_next_token(level2.substr(0,end), " \t\n").str;
 	char* input = new char[64];
 	std::cin >> input;
@@ -217,8 +266,8 @@ void Interpreter::get_statement(std::string statement)
 void Interpreter::if_statement(std::string statement)
 {
 	std::string level2 = statement.substr(2, statement.size());
-	int begin = level2.find('{');
-	int end = level2.find_last_of('}');
+	int begin = find_in_str(level2, '{');
+	int end = find_last_of_in_str(level2, '}');
 	InternalVariable condition = do_arit(level2.substr(0,begin));
 	if (condition.condition())
 	{
@@ -229,8 +278,8 @@ void Interpreter::if_statement(std::string statement)
 void Interpreter::while_statement(std::string statement)
 {
 	std::string level2 = statement.substr(5, statement.size());
-	int begin = level2.find('{');
-	int end = level2.find_last_of('}');
+	int begin = find_in_str(level2, '{');
+	int end = find_last_of_in_str(level2, '}');
 	InternalVariable condition = do_arit(level2.substr(0,begin));
 	while (condition.condition())
 	{
@@ -274,9 +323,9 @@ void Interpreter::statement_analyzer(std::string statement)
 bool is_outside_cr(std::string base, unsigned long long pos)
 {
 	int number = 0; 
-	if (base[pos] == '}' || base[pos] == ';')
+	if ((base[pos] == '}' || base[pos] == ';') && (!inside_string(base, pos)))
 	{
-		for (int i = 0; i <= pos; ++i)
+		for (unsigned long long i = 0; i <= pos; ++i)
 		{
 			if (base[i] == '{')
 				++number;

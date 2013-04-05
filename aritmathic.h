@@ -27,4 +27,9 @@ class Aritmathic
 		};
 		InternalVariable parse_aritmathic(std::string arit);
 };
+
+unsigned int find_last_of_in_str(std::string str, char c);
+unsigned int find_in_str(std::string str, char c);
+unsigned int find_in_str(std::string str, char* c);
+
 #endif

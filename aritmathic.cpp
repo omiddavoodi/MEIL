@@ -12,6 +12,17 @@
 
 #include <iostream>
 
+bool in_string(std::string base, unsigned int pos)
+{
+	bool inside = false;
+	for (unsigned int i = 0; i < pos; ++i)
+	{
+		if (base[i] == '"')
+			inside = !inside;
+	}
+	return inside;
+}
+
 int Aritmathic::number_of_char(std::string base, char token)
 {
 	unsigned int number = 0, length = base.length();
@@ -29,7 +40,7 @@ int Aritmathic::find_index_minus(std::string base, int current)
 	if (temp_index <= 0)
 		return -1;
 	char temp_char = base[temp_index];
-	while (temp_char != '+' && temp_char != '-')
+	while (temp_char != '+' && temp_char != '-' && !in_string(base, temp_index))
 	{
 		--temp_index;
 		if (temp_index <= 0)
@@ -48,7 +59,7 @@ int Aritmathic::find_index(std::string base, int current, bool next, int tokensi
 		if (temp_index >= size)
 			return size;
 		char temp_char = base[temp_index];
-		while (temp_char != '*' && temp_char != '/' && temp_char != '+' && temp_char != '-' && temp_char != '%' && temp_char != '<' && temp_char != '=' && temp_char != '>' && temp_char != '!')
+		while (temp_char != '*' && temp_char != '/' && temp_char != '+' && temp_char != '-' && temp_char != '%' && temp_char != '<' && temp_char != '=' && temp_char != '>' && temp_char != '!' && !in_string(base, temp_index))
 		{
 			++temp_index;
 			if (temp_index >= size)
@@ -64,7 +75,7 @@ int Aritmathic::find_index(std::string base, int current, bool next, int tokensi
 		if (temp_index <= 0)
 			return 0;
 		char temp_char = base[temp_index];
-		while (temp_char != '*' && temp_char != '/' && temp_char != '+' && temp_char != '-' && temp_char != '%' && temp_char != '<' && temp_char != '=' && temp_char != '>' && temp_char != '!')
+		while (temp_char != '*' && temp_char != '/' && temp_char != '+' && temp_char != '-' && temp_char != '%' && temp_char != '<' && temp_char != '=' && temp_char != '>' && temp_char != '!' && !in_string(base, temp_index))
 		{
 			--temp_index;
 			if (temp_index <= 0)
@@ -119,11 +130,60 @@ int number_of_nots(std::string base)
 	unsigned int number = 0, length = base.length();
 	for (unsigned int i = 0; i < length; ++i)
 	{
-		if (base[i] == '!')
+		if (base[i] == '!'  && !in_string(base, i))
 			if ((i == (length - 1)) || base[i+1] != '=')
 			++number;
 	}
 	return number;
+}
+
+unsigned int find_last_of_in_str(std::string str, char c)
+{
+	unsigned int size = str.size();
+	for (int i = size - 1; i >= 0; --i)
+	{
+		if (str[i] == c && !in_string(str, i))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+unsigned int find_in_str(std::string str, char c)
+{
+	unsigned int size = str.size();
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		if (str[i] == c && !in_string(str, i))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+unsigned int find_in_str(std::string str, char* c)
+{
+	std::string cs(c);
+	unsigned int size = str.size();
+	unsigned int csize = cs.size(); 
+	if (size >= csize)
+	{
+		for (unsigned int i = 0; i < size - csize + 1; ++i)
+		{
+			for (unsigned int j = 0; j < csize; ++j)
+			{
+				if (str[i+j] != cs[j] || in_string(str, i))
+				{
+					break;
+				}
+				if (j == csize - 1)
+					return i;
+			}
+		}
+	}
+	return -1;
 }
 
 std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
@@ -132,7 +192,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 
 	while (number_of_nots(temp) > 0)
 	{
-		int current = temp.find('!');
+		int current = find_in_str(temp, '!');
 		if (temp[current+1] != '=')
 		{
 			int next_index = find_index(temp, current ,1);
@@ -156,7 +216,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		//std::cout << temp << "\n";
 	}
 
-	int currentand = temp.find("&&"), currentor = temp.find("||"), currentnotequal = temp.find("!=");
+	int currentand = find_in_str(temp, "&&"), currentor = find_in_str(temp, "||"), currentnotequal = find_in_str(temp ,"!=");
 	while (currentand >= 0 || currentor >= 0 || currentnotequal >= 0)
 	{
 		int current;
@@ -196,12 +256,12 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
 		temp = std::string(temp2.data());
 		//std::cout << temp << "\n";
-		currentand = temp.find("&&");
-		currentor = temp.find("||");
-		currentnotequal = temp.find("!=");
+		currentand = find_in_str(temp ,"&&");
+		currentor = find_in_str(temp ,"||");
+		currentnotequal = find_in_str(temp ,"!=");
 	}
 
-	int currentequal = temp.find("=="), currentmore = temp.find(">="), currentless = temp.find("<=");
+	int currentequal = find_in_str(temp, "=="), currentmore = find_in_str(temp, ">="), currentless = find_in_str(temp ,"<=");
 	while (currentequal >= 0 || currentmore >= 0 || currentless >= 0)
 	{
 		int current;
@@ -241,14 +301,14 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
 		temp = std::string(temp2.data());
 		//std::cout << temp << "\n";
-		currentequal = temp.find("==");
-		currentmore = temp.find(">=");
-		currentless = temp.find("<=");
+		currentequal = find_in_str(temp, "==");
+		currentmore = find_in_str(temp, ">=");
+		currentless = find_in_str(temp, "<=");
 	}
 
 	while (number_of_char(temp, '>') > 0 || number_of_char(temp, '<') > 0)
 	{
-		int currentmore = temp.find('>'), currentless = temp.find('<'), current;
+		int currentmore = find_in_str(temp, '>'), currentless = find_in_str(temp, '<'), current;
 		int order = order_of_operands(currentmore, currentless);
 		if (order == 1) current = currentmore;
 		else current = currentless;
@@ -282,7 +342,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 
 	while (number_of_char(temp, '*') > 0 || number_of_char(temp, '/') > 0 || number_of_char(temp, '%') > 0)
 	{
-		int currentstar = temp.find('*'), currentslash = temp.find('/'), currentpercent = temp.find('%'), current;
+		int currentstar = find_in_str(temp, '*'), currentslash = find_in_str(temp, '/'), currentpercent = find_in_str(temp, '%'), current;
 		int order = order_of_operands(currentstar, currentslash, currentpercent);
 		if (order == 1) current = currentstar;
 		else if (order == 2) current = currentslash;
@@ -323,7 +383,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 
 	while (number_of_char(temp, '+') > 0 || number_of_char(temp, '-') > 0)
 	{
-		int currentcross = temp.find_last_of('+'), currentdash = temp.find_last_of('-'), current;
+		int currentcross = find_last_of_in_str(temp ,'+'), currentdash = find_last_of_in_str(temp ,'-'), current;
 		int order = order_of_operands(currentdash, currentcross);
 		if ((currentcross >= 0) && (order == 1 || currentdash < 0)) 
 		{
@@ -386,10 +446,10 @@ std::string Aritmathic::distribute_low_operands(std::string arit)
 	while (true)
 	{
 		int size = temp.size();
-		int m1 = lower(temp.find("--"), temp.find("++")), m2 = lower(temp.find("*+"), lower(temp.find("/+"), lower(temp.find("%+"), lower(temp.find("<+") , lower(temp.find(">+"), lower(temp.find("!+"), lower(temp.find("=+"), lower(temp.find("&+"), temp.find("|+")))))))))
-			,  m3 = lower(temp.find("*-"), lower(temp.find("/-"), lower(temp.find("%-"), lower(temp.find("<-") , lower(temp.find(">-"), lower(temp.find("!-"), lower(temp.find("=-"), lower(temp.find("&-"), temp.find("|-")))))))))
-			,  m4 = lower(temp.find("<=+"), lower(temp.find(">=+"), lower(temp.find("==+"), lower(temp.find("&&+"), temp.find("||+")))))
-			,  m5 = lower(temp.find("<=-"), lower(temp.find(">=-"), lower(temp.find("==-"), lower(temp.find("&&-"), temp.find("||-")))));
+		int m1 = lower(find_in_str(temp ,"--"), find_in_str(temp ,"++")), m2 = lower(find_in_str(temp ,"*+"), lower(find_in_str(temp ,"/+"), lower(find_in_str(temp ,"%+"), lower(find_in_str(temp ,"<+") , lower(find_in_str(temp ,">+"), lower(find_in_str(temp ,"!+"), lower(find_in_str(temp ,"=+"), lower(find_in_str(temp ,"&+"), find_in_str(temp ,"|+")))))))))
+			,  m3 = lower(find_in_str(temp ,"*-"), lower(find_in_str(temp ,"/-"), lower(find_in_str(temp ,"%-"), lower(find_in_str(temp ,"<-") , lower(find_in_str(temp ,">-"), lower(find_in_str(temp ,"!-"), lower(find_in_str(temp ,"=-"), lower(find_in_str(temp ,"&-"), find_in_str(temp ,"|-")))))))))
+			,  m4 = lower(find_in_str(temp ,"<=+"), lower(find_in_str(temp ,">=+"), lower(find_in_str(temp ,"==+"), lower(find_in_str(temp ,"&&+"), find_in_str(temp ,"||+")))))
+			,  m5 = lower(find_in_str(temp ,"<=-"), lower(find_in_str(temp ,">=-"), lower(find_in_str(temp ,"==-"), lower(find_in_str(temp ,"&&-"), find_in_str(temp ,"||-")))));
 		if (m1 == 0)
 		{
 			temp = temp.substr (2, size);
