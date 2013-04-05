@@ -28,7 +28,7 @@ int Aritmathic::number_of_char(std::string base, char token)
 	unsigned int number = 0, length = base.length();
 	for (unsigned int i = 0; i < length; ++i)
 	{
-		if (base[i] == token)
+		if (base[i] == token && !in_string(base, i))
 			++number;
 	}
 	return number;
@@ -397,7 +397,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		}
 		
 		int num_operands = number_of_char(temp, '/') + number_of_char(temp, '-') + number_of_char(temp, '+') + number_of_char(temp, '*') + number_of_char(temp, '%');
-		if (((number_of_char(temp, '-') == 1) && (temp[0] == '-')) || ((number_of_char(temp, '+') == 1) && (temp[0] == '+')) && (num_operands == 1))
+		if ((num_operands == 1) && ((number_of_char(temp, '-') == 1) && (temp[0] == '-')) || ((number_of_char(temp, '+') == 1) && (temp[0] == '+')))
 			return temp;
 
 		int pre_index = find_index(temp, current ,0), next_index = find_index(temp, current ,1);

@@ -34,7 +34,7 @@ class Interpreter
 		void statement_analyzer(std::string statement);
 	public:
 		Interpreter::Interpreter(){};
-		void code_analyzer(std::string code);
+		void code_analyzer(std::string code, bool checked = false);
 };
 
 #endif

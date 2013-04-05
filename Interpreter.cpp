@@ -271,7 +271,7 @@ void Interpreter::if_statement(std::string statement)
 	InternalVariable condition = do_arit(level2.substr(0,begin));
 	if (condition.condition())
 	{
-		this->code_analyzer(level2.substr(begin + 1, end - begin - 1));
+		this->code_analyzer(level2.substr(begin + 1, end - begin - 1), true);
 	}
 }
 
@@ -283,7 +283,7 @@ void Interpreter::while_statement(std::string statement)
 	InternalVariable condition = do_arit(level2.substr(0,begin));
 	while (condition.condition())
 	{
-		this->code_analyzer(level2.substr(begin + 1, end - begin - 1));
+		this->code_analyzer(level2.substr(begin + 1, end - begin - 1), true);
 		condition = do_arit(level2.substr(0,begin));
 	}
 }
@@ -382,15 +382,55 @@ Token get_next_statement(std::string base, unsigned long long pos = 0)
 	return ret;
 }
 
-void Interpreter::code_analyzer(std::string code)
+std::string check_for_backslashes(std::string base)
 {
-	unsigned long long size = code.size();
+	unsigned long long size = base.size();
+	std::string temp = "";
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		if (base[i] == '\\' && inside_string(base, i))
+		{
+			if (i < size-1)
+			{
+				if (base[i+1] == '\\')
+				{
+					temp.push_back('\\');
+					++i;
+				}
+				else if (base[i+1] == 'n')
+				{
+					temp.push_back('\n');
+					++i;
+				}
+				else if (base[i+1] == 't')
+				{
+					temp.push_back('\t');
+					++i;
+				}
+			}
+		}
+		else
+		{
+			temp.push_back(base[i]);
+		}
+	}
+	return temp;
+}
+
+void Interpreter::code_analyzer(std::string code, bool checked)
+{
+	std::string refined_code;
+	if (checked)
+		refined_code = code;
+	else
+		refined_code = check_for_backslashes(code);
+	unsigned long long size = refined_code.size();
 	Token temp;
 	temp.str = std::string("");
 	temp.pos = 0;
 	while (temp.pos + temp.str.size() < size)
 	{
-		temp = get_next_statement(code, temp.pos + temp.str.size());
+		temp = get_next_statement(refined_code, temp.pos + temp.str.size());
 		statement_analyzer(temp.str);
 	}
 }

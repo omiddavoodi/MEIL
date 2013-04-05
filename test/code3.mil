@@ -10,7 +10,6 @@ while (x <= 10)
 		var y = y + 1;
 	}
 	var x = x + 1;
-	print "
-";
+	print "\n";
 }
 pause;
