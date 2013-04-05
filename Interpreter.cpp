@@ -67,6 +67,7 @@ std::string remove_whitespaces(std::string statement, bool only_left = false)
 		}
 		return temp;
 	}
+	return std::string("");
 }
 
 bool is_in_string(char c, char* it)
@@ -150,7 +151,7 @@ InternalVariable Interpreter::do_arit(std::string statement)
 	temp.pos = 0;
 	while (temp.pos < size)
 	{
-		temp = get_next_token(level3, "!%&*()/|-+= \n\t" ,temp.pos + temp.str.size());
+		temp = get_next_token(level3, "!%&*()/|-+<>= \n\t" ,temp.pos + temp.str.size());
 		if (is_var(temp.str))
 		{
 			InternalVariable tempvar = this->variable_table.get_var(temp.str);
@@ -225,40 +226,77 @@ void Interpreter::if_statement(std::string statement)
 	}
 }
 
-void Interpreter::statement_analyzer(std::string statement)
+void Interpreter::while_statement(std::string statement)
 {
-	std::string level1 = remove_whitespaces(statement, true);
-	if (level1.find("var ") == 0)
+	std::string level2 = statement.substr(5, statement.size());
+	int begin = level2.find('{');
+	int end = level2.find('}');
+	InternalVariable condition = do_arit(level2.substr(0,begin));
+	while (condition.condition())
 	{
-		var_statement(level1);
-	}
-	else if (level1.find("print ") == 0)
-	{
-		print_statement(level1);
-	}
-	else if (level1.find("get ") == 0)
-	{
-		get_statement(level1);
-	}
-	else if (level1.find("if") == 0 && is_in_string(level1[2], "\t\n ("))
-	{
-		if_statement(level1);
-	}
-	else if (level1.find("pause") == 0)
-	{
-		system("PAUSE");
+		this->code_analyzer(level2.substr(begin + 1, end - begin - 1));
+		condition = do_arit(level2.substr(0,begin));
 	}
 }
 
-Token get_next_statement(std::string base, char* it, unsigned int pos = 0)
+void Interpreter::statement_analyzer(std::string statement)
 {
-	int size = base.size(), start;
+	if (statement.size() > 0)
+	{
+		std::string level1 = remove_whitespaces(statement, true);
+		if (level1.find("var ") == 0)
+		{
+			var_statement(level1);
+		}
+		else if (level1.find("print ") == 0)
+		{
+			print_statement(level1);
+		}
+		else if (level1.find("get ") == 0)
+		{
+			get_statement(level1);
+		}
+		else if (level1.find("if") == 0 && is_in_string(level1[2], "\t\n ("))
+		{
+			if_statement(level1);
+		}
+		else if (level1.find("while") == 0 && is_in_string(level1[5], "\t\n ("))
+		{
+			while_statement(level1);
+		}
+		else if (level1.find("pause") == 0)
+		{
+			system("PAUSE");
+		}
+	}
+}
+
+bool is_outside_cr(std::string base, unsigned long long pos)
+{
+	int number = 0; 
+	if (base[pos] == '}' || base[pos] == ';')
+	{
+		for (int i = 0; i <= pos; ++i)
+		{
+			if (base[i] == '{')
+				++number;
+			else if (base[i] == '}')
+				--number;
+		}
+		return (number == 0 ? true : false);
+	}
+	return false;
+}
+
+Token get_next_statement(std::string base, unsigned long long pos = 0)
+{
+	int size = base.size(), start = 0;
 	bool found = false;
 	for (int i = pos; i < size; ++i)
 	{
 		if (!found)
 		{
-			if (!is_in_string(base[i], it))
+			if (!is_outside_cr(base, i))
 			{
 				start = i;
 				found = true;
@@ -280,7 +318,7 @@ Token get_next_statement(std::string base, char* it, unsigned int pos = 0)
 				ret.pos = start;
 				return ret;
 			}
-			else if (is_in_string(base[i], it))
+			else if (is_outside_cr(base, i))
 			{
 				Token ret;
 				ret.str = base.substr(start, i - start + 1);
@@ -303,7 +341,7 @@ void Interpreter::code_analyzer(std::string code)
 	temp.pos = 0;
 	while (temp.pos + temp.str.size() < size)
 	{
-		temp = get_next_statement(code, ";}", temp.pos + temp.str.size());
+		temp = get_next_statement(code, temp.pos + temp.str.size());
 		statement_analyzer(temp.str);
 	}
 }

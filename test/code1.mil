@@ -1,5 +1,4 @@
 var s=4;
-var s=4;
 var ta=0;
 get ta;
 var g=5-2*s + ta;
@@ -10,6 +9,9 @@ if (ta == 1)
 {
 	print 4;
 }
-print "
-";
+while (ta < 3)
+{
+	print "more ";
+	get ta;
+}
 pause;
