@@ -1,22 +1,28 @@
-// ARIT.cpp : Testing the aritmathic operation codes
-// As of now, it doesn't support parantheses, spaces, tabs and lot of operands.
+#include <iostream>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include "interpreter.h"
 
-#include "Interpreter.h"
-
-
-int main()
+int main(int argc, char* argv[])
 {
-	while (true) {
-		Interpreter testInterpreter ;
-		std::string inputString = "" ;
-		std::cout << ">>" ;
-		testInterpreter.doInterpretion(inputString); // the parser shuld be called in this function
-		//Aritmathic b;
-		//std::cout << b.parse_aritmathic("2+5*3/2*6-3%2");
-		//system("PAUSE");
-
-		if (inputString == "exit" or inputString == "exit()" ) break;
+	if (argc > 1)
+	{
+		std::ifstream ifs(argv[1]);
+		std::stringstream buffer;
+		buffer << ifs.rdbuf();
+		std::string file = buffer.str();
+		Interpreter inter;
+		inter.code_analyzer (file);
 	}
-	return 0 ;
+	else
+	{
+		std::ifstream ifs("C:/Users/user/Documents/Visual Studio 2008/Projects/ARIT/Debug/code1.mil");
+		std::stringstream buffer;
+		buffer << ifs.rdbuf();
+		std::string file = buffer.str();
+		Interpreter inter;
+		inter.code_analyzer (file);
+	}
+	return 0;
 }
-

@@ -1,0 +1,9 @@
+var s=4;
+var s=4;
+var ta=0;
+get ta;
+var g=5-2*s + ta;
+print g;
+print "
+";
+pause;

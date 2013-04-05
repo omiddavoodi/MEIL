@@ -103,7 +103,14 @@ Token get_next_token(std::string base, char* it, unsigned int pos = 0)
 		}
 		else
 		{
-			if (is_in_string(base[i], it))
+			if (i == size-1)
+			{
+				Token ret;
+				ret.str = base.substr(start, i - start + 1);
+				ret.pos = start;
+				return ret;
+			}
+			else if (is_in_string(base[i], it))
 			{
 				Token ret;
 				ret.str = base.substr(start, i - start);
@@ -142,7 +149,7 @@ InternalVariable Interpreter::do_arit(std::string statement)
 	temp.pos = 0;
 	while (temp.pos < size)
 	{
-		temp = get_next_token(level3, "!%&*()/|-= \n\t" ,temp.pos + temp.str.size());
+		temp = get_next_token(level3, "!%&*()/|-+= \n\t" ,temp.pos + temp.str.size());
 		if (is_var(temp.str))
 		{
 			InternalVariable tempvar = this->variable_table.get_var(temp.str);
@@ -195,6 +202,16 @@ void Interpreter::print_statement(std::string statement)
 	}
 }
 
+void Interpreter::get_statement(std::string statement)
+{
+	std::string level2 = statement.substr(4, statement.size());
+	int end = level2.find(';');
+	std::string name = get_next_token(level2.substr(0,end), " \t\n").str;
+	char* input = new char[64];
+	std::cin >> input;
+	this->variable_table.change_var(name, str_to_var(std::string(input)));
+}
+
 void Interpreter::statement_analyzer(std::string statement)
 {
 	std::string level1 = remove_whitespaces(statement, true);
@@ -206,8 +223,70 @@ void Interpreter::statement_analyzer(std::string statement)
 	{
 		print_statement(level1);
 	}
+	else if (level1.find("get ") == 0)
+	{
+		get_statement(level1);
+	}
 	else if (level1.find("pause") == 0)
 	{
 		system("PAUSE");
+	}
+}
+
+Token get_next_statement(std::string base, char* it, unsigned int pos = 0)
+{
+	int size = base.size(), start;
+	bool found = false;
+	for (int i = pos; i < size; ++i)
+	{
+		if (!found)
+		{
+			if (!is_in_string(base[i], it))
+			{
+				start = i;
+				found = true;
+				if (i+1 == size)
+				{
+					Token ret;
+					ret.str = base.substr(start, size - start);
+					ret.pos = start;
+					return ret;
+				}
+			}
+		}
+		else
+		{
+			if (i == size-1)
+			{
+				Token ret;
+				ret.str = base.substr(start, i - start + 1);
+				ret.pos = start;
+				return ret;
+			}
+			else if (is_in_string(base[i], it))
+			{
+				Token ret;
+				ret.str = base.substr(start, i - start + 1);
+				ret.pos = start;
+				return ret;
+			}
+		}
+	}
+	Token ret;
+	ret.str = std::string("");
+	ret.pos = base.size();
+	return ret;
+}
+
+void Interpreter::code_analyzer(std::string code)
+{
+	unsigned long long size = code.size();
+	Token temp;
+	temp.str = std::string("");
+	temp.pos = 0;
+	while (temp.pos + temp.str.size() < size)
+	{
+		temp = get_next_statement(code, ";", temp.pos + temp.str.size());
+		statement_analyzer(temp.str);
 	}
 }

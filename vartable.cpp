@@ -25,7 +25,7 @@ void VarTable::add_var(std::string name)
 	}
 	++(this->var_count);
 	this->var_name_table.push_back(name);
-	this->var_table.push_back(InternalVariable());
+	this->var_table.push_back(InternalVariable((long long)0));
 }
 
 InternalVariable VarTable::get_var(std::string name)
@@ -37,7 +37,8 @@ InternalVariable VarTable::get_var(std::string name)
 			return this->var_table[i];
 		}
 	}
-	return InternalVariable((long long)0);
+	add_var(name);
+	return this->get_var(name);
 }
 
 void VarTable::change_var(std::string name, InternalVariable val)
