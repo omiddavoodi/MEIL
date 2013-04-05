@@ -133,6 +133,8 @@ InternalVariable Interpreter::do_arit(std::string statement)
 	// if we have two variables x=4 , y =3.7
 	// do_arit("5-x*(y+1)") returns the variable:
 	// InternalVariable(-13.7);
+	// you must use it for the calculation in your work. e.g. "m = 5-x*(y+1)" must change the value of m 
+	//(using this->variable_table.change_var()) to -13.7  
 	unsigned int size = statement.size();
 	std::string level3 = statement;
 	Token temp;
