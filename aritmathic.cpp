@@ -200,7 +200,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			std::string temp_result;
 			InternalVariable t_res;
 
-			t_res = next.not();
+			t_res = next.nots();
 
 			temp_result = var_to_str(t_res);
 			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
@@ -244,7 +244,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		}
 		else
 		{
-			t_res = (previous == next).not();
+			t_res = (previous == next).nots();
 			temp_result = var_to_str(t_res);
 			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}

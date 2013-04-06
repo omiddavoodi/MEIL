@@ -50,7 +50,7 @@ class InternalVariable {
 		//others
 		void deep_copy(InternalVariable);
 		bool positive();
-		InternalVariable not();
+		InternalVariable nots();
 		bool condition();
 
 		InternalVariable& operator=(long long);

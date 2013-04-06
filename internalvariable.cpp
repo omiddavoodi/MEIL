@@ -792,7 +792,7 @@ bool InternalVariable::positive()
 		return false;
 }
 
-InternalVariable InternalVariable::not()
+InternalVariable InternalVariable::nots()
 {
 	if (this->get_type() == Boolean)
 		return InternalVariable((long long)!this->get_bool_value());

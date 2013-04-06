@@ -280,11 +280,34 @@ void Interpreter::while_statement(std::string statement)
 	std::string level2 = statement.substr(5, statement.size());
 	int begin = find_in_str(level2, '{');
 	int end = find_last_of_in_str(level2, '}');
-	InternalVariable condition = do_arit(level2.substr(0,begin));
+	std::string str_condition = level2.substr(0,begin);
+	InternalVariable condition = do_arit(str_condition);
 	while (condition.condition())
 	{
 		this->code_analyzer(level2.substr(begin + 1, end - begin - 1), true);
-		condition = do_arit(level2.substr(0,begin));
+		condition = do_arit(str_condition);
+	}
+}
+
+void Interpreter::for_statement(std::string statement)
+{
+	std::string level2 = statement.substr(4, statement.size());
+	int begin = find_in_str(level2, '{');
+	int end = find_last_of_in_str(level2, '}');
+	int scl1 = find_in_str(level2, ',');
+	int scl2 = find_last_of_in_str(level2, ',');
+	int par1 = find_in_str(level2, '(');
+	int par2 = find_last_of_in_str(level2, ')');
+	std::string str_one_time = level2.substr(par1+1,scl1);
+	std::string str_condition = level2.substr(scl1+1,scl2-scl1-1);
+	std::string str_always = level2.substr(scl2+1,par2-scl2-1);
+	statement_analyzer(str_one_time);
+	InternalVariable condition = do_arit(str_condition);
+	while (condition.condition())
+	{
+		statement_analyzer(str_always);
+		this->code_analyzer(level2.substr(begin + 1, end - begin - 1), true);
+		condition = do_arit(str_condition);
 	}
 }
 
@@ -312,6 +335,10 @@ void Interpreter::statement_analyzer(std::string statement)
 		else if (level1.find("while") == 0 && is_in_string(level1[5], "\t\n ("))
 		{
 			while_statement(level1);
+		}
+		else if (level1.find("for") == 0 && is_in_string(level1[3], "\t\n ("))
+		{
+			for_statement(level1);
 		}
 		else if (level1.find("pause") == 0)
 		{
