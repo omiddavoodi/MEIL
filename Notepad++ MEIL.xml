@@ -1,5 +1,5 @@
 <NotepadPlus>
-    <UserLang name="MEIL" ext=".mil">
+    <UserLang name="MEIL" ext="mil">
         <Settings>
             <Global caseIgnored="no" />
             <TreatAsSymbol comment="no" commentLine="no" />
