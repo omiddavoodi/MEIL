@@ -22,6 +22,8 @@
 #include <iostream>
 #endif
 
+std::string g_previous_statement("");
+
 bool inside_string(std::string base, unsigned int pos)
 {
 	bool is = false;
@@ -184,6 +186,104 @@ bool is_var(std::string base)
 	return true;
 }
 
+int get_plusplus_argument(std::string base, int location, bool next = true, bool plusplus = true)
+{
+    int size = base.size();
+    if (location < 0)
+       return -1;
+    if (next)
+    {
+        if (plusplus)
+        {
+           for (int i = location; i < size; ++i)
+           {
+               if (!is_whitespace(base[i]))
+               {
+                   if (i < (size-1) && (base[i] == '+' && base[i+1] == '+'))
+                   {
+                      return i;
+                   }
+                   else
+                   {
+                      return -1; 
+                   } 
+               }
+               else
+               {
+                   return -1;
+               }
+           } 
+        }
+        else
+        {
+           for (int i = location; i < size; ++i)
+           {
+               if (!is_whitespace(base[i]))
+               {
+                   if (i < (size-1) && (base[i] == '-' && base[i+1] == '-'))
+                   {
+                      return i;
+                   }
+                   else
+                   {
+                      return -1; 
+                   } 
+               }
+               else
+               {
+                   return -1;
+               }
+           } 
+        }
+    }
+    else
+    {
+        if (plusplus)
+        {
+           for (int i = location; i >= 0; --i)
+           {
+               if (!is_whitespace(base[i]))
+               {
+                   if (i > 1 && (base[i] == '+' && base[i-1] == '+'))
+                   {
+                      return i-1;
+                   }
+                   else
+                   {
+                      return -1; 
+                   } 
+               }
+               else
+               {
+                   return -1;
+               }
+           } 
+        }
+        else
+        {
+           for (int i = location; i >= 0; --i)
+           {
+               if (!is_whitespace(base[i]))
+               {
+                   if (i > 1 && (base[i] == '-' && base[i-1] == '-'))
+                   {
+                      return i-1;
+                   }
+                   else
+                   {
+                      return -1; 
+                   } 
+               }
+               else
+               {
+                   return -1;
+               }
+           } 
+        }
+    }
+    return -1;
+}
+
 InternalVariable Interpreter::do_arit(std::string statement)
 {
 	// TODO: Reza: this function returns the result of an operation. For example:
@@ -204,8 +304,43 @@ InternalVariable Interpreter::do_arit(std::string statement)
 		if (is_var(temp.str))
 		{
 			InternalVariable tempvar = this->variable_table.get_var(temp.str);
+            int prevpp = get_plusplus_argument(level3, temp.pos - 1, false);
+            if (prevpp >= 0)
+            {
+                 this->variable_table.change_var(temp.str, (tempvar + (long long)1));
+                 tempvar = this->variable_table.get_var(temp.str);
+                 level3 = level3.substr(0, prevpp).append(level3.substr(prevpp+2,size));
+  			     temp.pos -= 2;
+            }
+            else
+            {
+                 int prevmm = get_plusplus_argument(level3, temp.pos - 1, false, false);
+                 if (prevmm >= 0)
+                 {
+                     this->variable_table.change_var(temp.str, (tempvar - (long long)1));
+                     tempvar = this->variable_table.get_var(temp.str);
+                     level3 = level3.substr(0, prevmm).append(level3.substr(prevmm+2,size));
+                     temp.pos -= 2;
+                 }
+            }
+  			size = level3.size();
 			level3 = level3.substr(0, temp.pos).append(var_to_str(tempvar)).append(level3.substr(temp.pos + temp.str.size(),size));
-			size = level3.size();
+            int nextpp = get_plusplus_argument(level3, temp.pos + temp.str.size());
+            if (nextpp >= 0)
+            {
+                 this->variable_table.change_var(temp.str, (tempvar + (long long)1));
+                 level3 = level3.substr(0, nextpp).append(level3.substr(nextpp+2,size));
+            }
+            else
+            {
+                 int nextmm = get_plusplus_argument(level3, temp.pos + temp.str.size(), true, false);
+                 if (nextmm >= 0)
+                 {
+                     this->variable_table.change_var(temp.str, (tempvar - (long long)1));
+                     level3 = level3.substr(0, nextmm).append(level3.substr(nextmm+2,size));
+                 }
+            }
+  			size = level3.size();
 		}
 	}
 	level3 = remove_whitespaces(level3);
@@ -344,6 +479,8 @@ void Interpreter::statement_analyzer(std::string statement)
 		{
 			system("PAUSE");
 		}
+
+		g_previous_statement = statement;
 	}
 }
 
@@ -444,6 +581,26 @@ std::string check_for_backslashes(std::string base)
 	return temp;
 }
 
+bool is_if(std::string statement)
+{
+     std::string level1 = remove_whitespaces(statement, true);
+     if (level1.find("if") == 0 && is_in_string(level1[2], "\t\n ("))
+     {
+        return true;                      
+     }
+     return false;
+}
+
+bool is_else(std::string statement)
+{
+     std::string level1 = remove_whitespaces(statement, true);
+     if (level1.find("else") == 0 && is_in_string(level1[5], "\t\n ("))
+     {
+        return true;                      
+     }
+     return false;
+}
+
 void Interpreter::code_analyzer(std::string code, bool checked)
 {
 	std::string refined_code;
@@ -458,6 +615,25 @@ void Interpreter::code_analyzer(std::string code, bool checked)
 	while (temp.pos + temp.str.size() < size)
 	{
 		temp = get_next_statement(refined_code, temp.pos + temp.str.size());
-		statement_analyzer(temp.str);
+		if (is_if(temp.str))
+		{
+           Token temp2 = get_next_statement(refined_code, temp.pos + temp.str.size());
+           std::string temp3("");
+           if (is_else(temp2.str))
+           {
+               while (is_else(temp2.str))
+               {
+                   temp3.append(temp2.str);
+                   temp2 = get_next_statement(refined_code, temp2.pos + temp2.str.size());
+               }
+               statement_analyzer(temp3);
+               temp = temp2;
+           }
+           statement_analyzer(temp.str);
+        }
+        else
+        {
+             statement_analyzer(temp.str);
+        }
 	}
 }

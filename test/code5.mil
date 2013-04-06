@@ -1,0 +1,8 @@
+var h = 1;
+for (var x = 0, x < 3, var x = x + 1)
+{
+	var g = h++;
+	print g;
+	print "X\n";
+}
+pause;
