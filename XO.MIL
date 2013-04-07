@@ -1,0 +1,391 @@
+var a1 = 0;
+var a2 = 0;
+var a3 = 0;
+var a4 = 0;
+var a5 = 0;
+var a6 = 0;
+var a7 = 0;
+var a8 = 0;
+var a9 = 0;
+var player = 1;
+
+var playingState = 0;
+
+var i = 0;
+
+while ( i < 8 )
+{
+	var selection = 0;
+	var elsePlayer = 1;
+	if ( player == 1 )
+	{
+		print "player 1 : ";
+		get selection;
+		var player = -1;
+		var elsePlayer = 0;
+
+		var else = 1;
+		if ( selection == 1 )
+		{
+			var a1 = 1;
+			var else = 0;
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 2 )
+			{
+				var a2 = 1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 3 )
+			{
+				var a3 = 1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 4 )
+			{
+				var a4 = 1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 5 )
+			{
+				var a5 = 1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 6 )
+			{
+				var a6 = 1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 7 )
+			{
+				var a7 = 1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 8 )
+			{
+				var a8 = 1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 9 )
+			{
+				var a9 = 1;
+				var else = 0;
+			}
+		}
+
+	}	
+	if ( elsePlayer == 1 )
+	{
+		print "player 2 : ";
+		get selection;
+		var player = 1;
+
+		var else = 1;
+		if ( selection == 1 )
+		{
+			var a1 = -1;
+			var else = 0;
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 2 )
+			{
+				var a2 = -1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 3 )
+			{
+				var a3 = -1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 4 )
+			{
+				var a4 = -1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 5 )
+			{
+				var a5 = -1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 6 )
+			{
+				var a6 = -1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 7 )
+			{
+				var a7 = -1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 8 )
+			{
+				var a8 = -1;
+				var else = 0;
+			}
+		}
+		if ( else == 1 )
+		{
+			if ( selection == 9 )
+			{
+				var a9 = -1;
+				var else = 0;
+			}
+		}
+		
+	}
+
+	var else = 1;
+	if ( a1 == 0 )
+	{
+		print "-";
+		var else = 0;
+	}
+	if ( else == 1 )
+	{
+		if ( a1 == 1 )
+		{
+			print "O";
+			var else = 0;
+		}
+	}
+	if ( else == 1 )
+	{
+		if ( a1 == -1 )
+		{
+			print "X";
+			var else = 0;
+		}
+	}
+
+
+	var else = 1;
+	if ( a2 == 0 )
+	{
+		print "-";
+		var else = 0;
+	}
+	if ( else == 1 )
+	{
+		if ( a2 == 1 )
+		{
+			print "O";
+			var else = 0;
+		}
+	}
+	if ( else == 1 )
+	{
+		if ( a2 == -1 )
+		{
+			print "X";
+		}
+	}
+
+
+	var else = 1;
+	if ( a3 == 0 )
+	{
+		print "-";
+		var else = 0;
+	}
+	if ( else == 1 )
+	{
+		if ( a3 == 1 )
+		{
+			print "O";
+			var else = 0;
+		}
+	}
+	if ( else == 1 )
+	{
+		if ( a3 == -1 )
+		{
+			print "X";
+		}
+	}
+
+	print "\n";
+
+	var else = 1;
+	if ( a4 == 0 )
+	{
+		print "-";
+		var else = 0;
+	}
+	if ( else == 1 )
+	{
+		if ( a4 == 1 )
+		{
+			print "O";
+			var else = 0;
+		}
+	}
+	if ( else == 1 )
+	{
+		if ( a4 == -1 )
+		{
+			print "X";
+		}
+	}
+
+
+	var else = 1;
+	if ( a5 == 0 )
+	{
+		print "-";
+		var else = 0;
+	}
+	if ( else == 1 )
+	{
+		if ( a5 == 1 )
+		{
+			print "O";
+			var else = 0;
+		}
+	}
+	if ( else == 1 )
+	{
+		if ( a5 == -1 )
+		{
+			print "X";
+		}
+	}
+
+
+	var else = 1;
+	if ( a6 == 0 )
+	{
+		print "-";
+		var else = 0;
+	}
+	if ( else == 1 )
+	{
+		if ( a6 == 1 )
+		{
+			print "O";
+			var else = 0;
+		}
+	}
+	if ( else == 1 )
+	{
+		if ( a6 == -1 )
+		{
+			print "X";
+		}
+	}
+
+
+	print "\n";
+
+	var else = 1;
+	if ( a7 == 0 )
+	{
+		print "-";
+		var else = 0;
+	}
+	if ( else == 1 )
+	{
+		if ( a7 == 1 )
+		{
+			print "O";
+			var else = 0;
+		}
+	}
+	if ( else == 1 )
+	{
+		if ( a7 == -1 )
+		{
+			print "X";
+		}
+	}
+
+
+	var else = 1;
+	if ( a8 == 0 )
+	{
+		print "-";
+		var else = 0;
+	}
+	if ( else == 1 )
+	{
+		if ( a8 == 1 )
+		{
+			print "O";
+			var else = 0;
+		}
+	}
+	if ( else == 1 )
+	{
+		if ( a8 == -1 )
+		{
+			print "X";
+		}
+	}
+
+
+	var else = 1;
+	if ( a9 == 0 )
+	{
+		print "-";
+		var else = 0;
+	}
+	if ( else == 1 )
+	{
+		if ( a9 == 1 )
+		{
+			print "O";
+			var else = 0;
+		}
+	}
+	if ( else == 1 )
+	{
+		if ( a9 == -1 )
+		{
+			print "X";
+		}
+	}
+	print "\n";
+	var i = i + 1;
+}
+
+pause;
