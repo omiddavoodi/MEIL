@@ -400,13 +400,55 @@ void Interpreter::get_statement(std::string statement)
 
 void Interpreter::if_statement(std::string statement)
 {
-	std::string level2 = statement.substr(2, statement.size());
-	int begin = find_in_str(level2, '{');
-	int end = find_last_of_in_str(level2, '}');
-	InternalVariable condition = do_arit(level2.substr(0,begin));
-	if (condition.condition())
+	int else_loc = find_in_str(statement, "else");
+	if (else_loc == -1)
 	{
-		this->code_analyzer(level2.substr(begin + 1, end - begin - 1), true);
+		std::string level2 = statement.substr(2, statement.size());
+		int begin = find_in_str(level2, '{');
+		int end = find_last_of_in_str(level2, '}');
+		InternalVariable condition = do_arit(level2.substr(0,begin));
+		if (condition.condition())
+		{
+			this->code_analyzer(level2.substr(begin + 1, end - begin - 1), true);
+		}
+	}
+	else
+	{
+		std::string level2 = statement.substr(2, else_loc - 2);
+		int begin = find_in_str(level2, '{');
+		int end = find_last_of_in_str(level2, '}');
+		InternalVariable condition = do_arit(level2.substr(0,begin));
+		if (condition.condition())
+		{
+			this->code_analyzer(level2.substr(begin + 1, end - begin - 1), true);
+		}
+		else
+		{
+			int size = statement.size();
+			else_loc -= 2;
+			while (else_loc != -1)
+			{
+				level2 = level2.substr(else_loc + 4, size);
+				int next_else = find_in_str(level2, "else");
+				int begin = find_in_str(level2, '{');
+				std::string current_block;
+				if (next_else == -1)
+				{
+					current_block = level2.substr(0, size);
+				}
+				else
+				{
+					current_block = level2.substr(0, next_else);
+				}
+				int end = find_last_of_in_str(current_block, '}');
+				InternalVariable condition = do_arit(level2.substr(0,begin));
+				if (condition.condition())
+				{
+					this->code_analyzer(level2.substr(begin + 1, end - begin - 1), true);
+				}
+				else_loc = next_else;
+			}
+		}
 	}
 }
 
@@ -429,19 +471,19 @@ void Interpreter::for_statement(std::string statement)
 	std::string level2 = statement.substr(4, statement.size());
 	int begin = find_in_str(level2, '{');
 	int end = find_last_of_in_str(level2, '}');
-	int scl1 = find_in_str(level2, ',');
-	int scl2 = find_last_of_in_str(level2, ',');
+	int scl1 = find_in_str(level2, ';');
+	int scl2 = find_in_str(level2.substr(scl1+1, level2.size()), ';')+scl1+1;
 	int par1 = find_in_str(level2, '(');
-	int par2 = find_last_of_in_str(level2, ')');
+	int par2 = find_in_str(level2.substr(par1+1, level2.size()), ')')+par1+1;
 	std::string str_one_time = level2.substr(par1+1,scl1);
 	std::string str_condition = level2.substr(scl1+1,scl2-scl1-1);
-	std::string str_always = level2.substr(scl2+1,par2-scl2-1);
+	std::string str_always = level2.substr(scl2+1,par2-scl2-1).append(";");
 	statement_analyzer(str_one_time);
 	InternalVariable condition = do_arit(str_condition);
 	while (condition.condition())
 	{
-		statement_analyzer(str_always);
 		this->code_analyzer(level2.substr(begin + 1, end - begin - 1), true);
+		statement_analyzer(str_always);
 		condition = do_arit(str_condition);
 	}
 }
@@ -601,6 +643,16 @@ bool is_else(std::string statement)
      return false;
 }
 
+bool is_for(std::string statement)
+{
+     std::string level1 = remove_whitespaces(statement, true);
+     if (level1.find("for") == 0 && is_in_string(level1[3], "\t\n ("))
+     {
+        return true;                      
+     }
+     return false;
+}
+
 void Interpreter::code_analyzer(std::string code, bool checked)
 {
 	std::string refined_code;
@@ -633,7 +685,18 @@ void Interpreter::code_analyzer(std::string code, bool checked)
         }
         else
         {
-             statement_analyzer(temp.str);
+			if (is_for(temp.str))
+			{
+				Token temp2 = get_next_statement(refined_code, temp.pos + temp.str.size());
+				temp.str.append(temp2.str);
+				temp2 = get_next_statement(refined_code, temp2.pos + temp2.str.size());
+				temp.str.append(temp2.str);
+				statement_analyzer(temp.str);
+			}
+			else
+			{
+				statement_analyzer(temp.str);
+			}
         }
 	}
 }

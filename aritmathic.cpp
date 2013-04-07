@@ -59,7 +59,7 @@ int Aritmathic::find_index(std::string base, int current, bool next, int tokensi
 		if (temp_index >= size)
 			return size;
 		char temp_char = base[temp_index];
-		while (temp_char != '*' && temp_char != '/' && temp_char != '+' && temp_char != '-' && temp_char != '%' && temp_char != '<' && temp_char != '=' && temp_char != '>' && temp_char != '!' && !in_string(base, temp_index))
+		while (temp_char != '*' && temp_char != '/' && temp_char != '+' && temp_char != '-' && temp_char != '%' && temp_char != '<' && temp_char != '=' && temp_char != '>' && temp_char != '!' && temp_char != '&' && temp_char != '|' && !in_string(base, temp_index))
 		{
 			++temp_index;
 			if (temp_index >= size)
@@ -75,7 +75,7 @@ int Aritmathic::find_index(std::string base, int current, bool next, int tokensi
 		if (temp_index <= 0)
 			return 0;
 		char temp_char = base[temp_index];
-		while (temp_char != '*' && temp_char != '/' && temp_char != '+' && temp_char != '-' && temp_char != '%' && temp_char != '<' && temp_char != '=' && temp_char != '>' && temp_char != '!' && !in_string(base, temp_index))
+		while (temp_char != '*' && temp_char != '/' && temp_char != '+' && temp_char != '-' && temp_char != '%' && temp_char != '<' && temp_char != '=' && temp_char != '>' && temp_char != '!' && temp_char != '&' && temp_char != '|' && !in_string(base, temp_index))
 		{
 			--temp_index;
 			if (temp_index <= 0)
@@ -216,7 +216,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		//std::cout << temp << "\n";
 	}
 
-	int currentand = find_in_str(temp, "&&"), currentor = find_in_str(temp, "||"), currentnotequal = find_in_str(temp ,"!=");
+	/*int currentand = find_in_str(temp, "&&"), currentor = find_in_str(temp, "||"), currentnotequal = find_in_str(temp ,"!=");
 	while (currentand >= 0 || currentor >= 0 || currentnotequal >= 0)
 	{
 		int current;
@@ -338,7 +338,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
 		temp = std::string(temp2.data());
 		//std::cout << temp << "\n";
-	}
+	}*/
 
 	while (number_of_char(temp, '*') > 0 || number_of_char(temp, '/') > 0 || number_of_char(temp, '%') > 0)
 	{
@@ -397,8 +397,8 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		}
 		
 		int num_operands = number_of_char(temp, '/') + number_of_char(temp, '-') + number_of_char(temp, '+') + number_of_char(temp, '*') + number_of_char(temp, '%');
-		if ((num_operands == 1) && ((number_of_char(temp, '-') == 1) && (temp[0] == '-')) || ((number_of_char(temp, '+') == 1) && (temp[0] == '+')))
-			return temp;
+		if ((num_operands == 1) && (((number_of_char(temp, '-') == 1) && (temp[0] == '-')) || ((number_of_char(temp, '+') == 1) && (temp[0] == '+'))))
+			break;
 
 		int pre_index = find_index(temp, current ,0), next_index = find_index(temp, current ,1);
 		InternalVariable next = str_to_var(temp.substr(current + 1, next_index - current - 1).data());
@@ -415,6 +415,132 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		else if (order == 2)
 		{
 			t_res = previous - next;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
+		}
+
+		std::string temp2("");
+		if (temp[pre_index] == '-')
+			--pre_index;
+		if (pre_index > 0)
+			temp2.append(temp.substr(0,pre_index+1)).append(temp_result).append(temp.substr(next_index,temp.size()));
+		else
+			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
+		temp = distribute_low_operands(std::string(temp2.data()));
+		//std::cout << temp << "\n";
+	}
+
+	int currentand = find_in_str(temp, "&&"), currentor = find_in_str(temp, "||"), currentnotequal = find_in_str(temp ,"!=");
+	while (currentand >= 0 || currentor >= 0 || currentnotequal >= 0)
+	{
+		int current;
+		int order = order_of_operands(currentand, currentor, currentnotequal);
+		if (order == 1) current = currentand;
+		else if (order == 2) current = currentor;
+		else current = currentnotequal;
+
+		int pre_index = find_index(temp, current ,0, 2), next_index = find_index(temp, current ,1, 2);
+		InternalVariable next = str_to_var(temp.substr(current + 2, next_index - current - 2).data());
+		InternalVariable previous = str_to_var(temp.substr(pre_index, current - pre_index).data());
+		std::string temp_result;
+		InternalVariable t_res;
+		if (order == 1)
+		{
+			t_res = next && previous;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
+		}
+		else if (order == 2)
+		{
+			t_res = previous || next;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
+		}
+		else
+		{
+			t_res = (previous == next).nots();
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
+		}
+
+		std::string temp2("");
+		if (pre_index > 0)
+			temp2.append(temp.substr(0,pre_index)).append(temp_result).append(temp.substr(next_index,temp.size()));
+		else
+			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
+		temp = std::string(temp2.data());
+		//std::cout << temp << "\n";
+		currentand = find_in_str(temp ,"&&");
+		currentor = find_in_str(temp ,"||");
+		currentnotequal = find_in_str(temp ,"!=");
+	}
+
+	int currentequal = find_in_str(temp, "=="), currentmore = find_in_str(temp, ">="), currentless = find_in_str(temp ,"<=");
+	while (currentequal >= 0 || currentmore >= 0 || currentless >= 0)
+	{
+		int current;
+		int order = order_of_operands(currentequal, currentmore, currentless);
+		if (order == 1) current = currentequal;
+		else if (order == 2) current = currentmore;
+		else current = currentless;
+
+		int pre_index = find_index(temp, current ,0, 2), next_index = find_index(temp, current ,1, 2);
+		InternalVariable next = str_to_var(temp.substr(current + 2, next_index - current - 2).data());
+		InternalVariable previous = str_to_var(temp.substr(pre_index, current - pre_index).data());
+		std::string temp_result;
+		InternalVariable t_res;
+		if (order == 1)
+		{
+			t_res = next == previous;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
+		}
+		else if (order == 2)
+		{
+			t_res = previous >= next;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
+		}
+		else
+		{
+			t_res = previous <= next;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
+		}
+
+		std::string temp2("");
+		if (pre_index > 0)
+			temp2.append(temp.substr(0,pre_index)).append(temp_result).append(temp.substr(next_index,temp.size()));
+		else
+			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
+		temp = std::string(temp2.data());
+		//std::cout << temp << "\n";
+		currentequal = find_in_str(temp, "==");
+		currentmore = find_in_str(temp, ">=");
+		currentless = find_in_str(temp, "<=");
+	}
+
+	while (number_of_char(temp, '>') > 0 || number_of_char(temp, '<') > 0)
+	{
+		int currentmore = find_in_str(temp, '>'), currentless = find_in_str(temp, '<'), current;
+		int order = order_of_operands(currentmore, currentless);
+		if (order == 1) current = currentmore;
+		else current = currentless;
+
+		int pre_index = find_index(temp, current ,0), next_index = find_index(temp, current ,1);
+		InternalVariable next = str_to_var(temp.substr(current + 1, next_index - current - 1).data());
+		InternalVariable previous = str_to_var(temp.substr(pre_index, current - pre_index).data());
+		std::string temp_result;
+		InternalVariable t_res;
+		if (order == 1)
+		{
+			t_res = previous > next;
+			temp_result = var_to_str(t_res);
+			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
+		}
+		else
+		{
+			t_res = previous < next;
 			temp_result = var_to_str(t_res);
 			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}

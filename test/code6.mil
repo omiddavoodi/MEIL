@@ -1,0 +1,26 @@
+var h;
+get h;
+if (h <= 1)
+{
+	print "None\n";
+}
+if (h > 1)
+{
+	for (var i = h; i > 1; var i = i - 1)
+	{
+		var sut = 0;
+		for (var j = 2; j <= h; var j = j + 1)
+		{
+			if ((i!=j) && (i%j == 0))
+			{
+				var sut = 1;
+			}
+		}
+		if (sut == 0)
+		{
+			print i;
+			print " ";
+		}
+	}
+}
+pause;
