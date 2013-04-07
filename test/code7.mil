@@ -1,0 +1,20 @@
+var num;
+get num;
+if (num == 1)
+{
+	print "One\n";
+}
+else if (num == 2)
+{
+	print "Two\n";
+}
+else if (num == 3)
+{
+	print "Three\n";
+}
+else
+{
+	print "else\n";
+}
+pause;
+

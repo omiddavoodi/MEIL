@@ -416,7 +416,7 @@ void Interpreter::if_statement(std::string statement)
 	{
 		std::string level2 = statement.substr(2, else_loc - 2);
 		int begin = find_in_str(level2, '{');
-		int end = find_last_of_in_str(level2, '}');
+		int end = find_in_str(level2.substr(begin, level2.size()), '}')+begin;
 		InternalVariable condition = do_arit(level2.substr(0,begin));
 		if (condition.condition())
 		{
@@ -425,7 +425,7 @@ void Interpreter::if_statement(std::string statement)
 		else
 		{
 			int size = statement.size();
-			else_loc -= 2;
+			level2 = std::string(statement.data());
 			while (else_loc != -1)
 			{
 				level2 = level2.substr(else_loc + 4, size);
@@ -440,11 +440,17 @@ void Interpreter::if_statement(std::string statement)
 				{
 					current_block = level2.substr(0, next_else);
 				}
-				int end = find_last_of_in_str(current_block, '}');
-				InternalVariable condition = do_arit(level2.substr(0,begin));
+				int end = find_in_str(current_block.substr(begin, current_block.size()), '}')+begin;
+				InternalVariable condition = true;
+				int if_loc = find_in_str(current_block.substr(0,begin) , "if");
+				if (if_loc != -1)
+				{
+					condition = do_arit(current_block.substr(2+if_loc,begin-2-if_loc));
+				}
 				if (condition.condition())
 				{
-					this->code_analyzer(level2.substr(begin + 1, end - begin - 1), true);
+					this->code_analyzer(current_block.substr(begin + 1, end - begin - 1), true);
+					break;
 				}
 				else_loc = next_else;
 			}
@@ -636,7 +642,7 @@ bool is_if(std::string statement)
 bool is_else(std::string statement)
 {
      std::string level1 = remove_whitespaces(statement, true);
-     if (level1.find("else") == 0 && is_in_string(level1[5], "\t\n ("))
+     if (level1.find("else") == 0 && is_in_string(level1[4], "\t\n ("))
      {
         return true;                      
      }
@@ -670,7 +676,7 @@ void Interpreter::code_analyzer(std::string code, bool checked)
 		if (is_if(temp.str))
 		{
            Token temp2 = get_next_statement(refined_code, temp.pos + temp.str.size());
-           std::string temp3("");
+           std::string temp3(temp.str);
            if (is_else(temp2.str))
            {
                while (is_else(temp2.str))

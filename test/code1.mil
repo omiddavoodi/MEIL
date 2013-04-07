@@ -6,11 +6,21 @@ print g;
 print "\n";
 if (ta == 1)
 {
-	print "a=b";
+	print "a=b\n";
 }
 else if (ta == 2)
 {
 	print "salam\n";
+}
+else if (ta == 3)
+{
+	print "sdg\n";
+	print "sdg\n";
+	print "sdg\n";
+}
+else
+{
+	print "ergr\n";
 }
 while (ta < 3)
 {
