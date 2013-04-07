@@ -13,7 +13,7 @@ var playingState = 0;
 
 var i = 0;
 
-while ( i < 8 )
+while ( playingState == 0)
 {
 	var selection = 0;
 	var elsePlayer = 1;
@@ -41,7 +41,7 @@ while ( i < 8 )
 				}
 				if ( elseSelection == 1 )
 				{
-					print "This point either has selected before !\n";
+					print "This point either has selected before !\n\n";
 				}
 			}
 			if ( else == 1 )
@@ -58,7 +58,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -76,7 +76,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -94,7 +94,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -112,7 +112,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -130,7 +130,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -148,7 +148,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -166,7 +166,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -184,14 +184,14 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
 	
 			if ( else == 1 )
 			{
-				print "the entered point is not true ! try again \n";
+				print "the entered point is not true ! try again \n\n";
 			}
 		}
 	}	
@@ -220,7 +220,7 @@ while ( i < 8 )
 				}
 				if ( elseSelection == 1 )
 				{
-					print "This point either has selected before !\n";
+					print "This point either has selected before !\n\n";
 				}
 			}
 			if ( else == 1 )
@@ -237,7 +237,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -255,7 +255,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -273,7 +273,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -291,7 +291,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -309,7 +309,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -327,7 +327,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -345,7 +345,7 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
@@ -363,14 +363,14 @@ while ( i < 8 )
 					}
 					if ( elseSelection == 1 )
 					{
-						print "This point either has selected before !\n";
+						print "This point either has selected before !\n\n";
 					}
 				}
 			}
 	
 			if ( else == 1 )
 			{
-				print "the entered point is not true ! try again \n";
+				print "the entered point is not true ! try again \n\n";
 			}
 		}
 	}
@@ -585,7 +585,144 @@ while ( i < 8 )
 		}
 	}
 	print "\n";
+
+	if ( a1 == a2 )
+	{
+		if ( a2 == a3 )
+		{
+			if ( a1 == 1 )
+			{
+				var playingState = 1;
+			}
+			if ( a1 == -1 )
+			{
+				var playingState = -1;
+			}
+		}
+	}
+	if ( a4 == a5 )
+	{
+		if ( a5 == a6 )
+		{
+			if ( a4 == 1 )
+			{
+				var playingState = 1;
+			}
+			if ( a4 == -1 )
+			{
+				var playingState = -1;
+			}
+		}
+	}
+	if ( a7 == a8 )
+	{
+		if ( a8 == a9 )
+		{
+			if ( a7 == 1 )
+			{
+				var playingState = 1;
+			}
+			if ( a7 == -1 )
+			{
+				var playingState = -1;
+			}
+		}
+	}
+	if ( a1 == a4 )
+	{
+		if ( a4 == a7 )
+		{
+			if ( a1 == 1 )
+			{
+				var playingState = 1;
+			}
+			if ( a1 == -1 )
+			{
+				var playingState = -1;
+			}
+		}
+	}
+	if ( a2 == a5 )
+	{
+		if ( a5 == a8 )
+		{
+			if ( a2 == 1 )
+			{
+				var playingState = 1;
+			}
+			if ( a2 == -1 )
+			{
+				var playingState = -1;
+			}
+		}
+	}
+	if ( a3 == a6 )
+	{
+		if ( a6 == a9 )
+		{
+			if ( a3 == 1 )
+			{
+				var playingState = 1;
+			}
+			if ( a3 == -1 )
+			{
+				var playingState = -1;
+			}
+		}
+	}
+	if ( a1 == a5 )
+	{
+		if ( a5 == a9 )
+		{
+			if ( a1 == 1 )
+			{
+				var playingState = 1;
+			}
+			if ( a1 == -1 )
+			{
+				var playingState = -1;
+			}
+		}
+	}
+	if ( a3 == a5 )
+	{
+		if ( a5 == a7 )
+		{
+			if ( a3 == 1 )
+			{
+				var playingState = 1;
+			}
+			if ( a3 == -1 )
+			{
+				var playingState = -1;
+			}
+		}
+	}
+
 	var i = i + 1;
+	
+	if ( i == 8 )
+	{
+		var playingState = 99;
+	}
 }
 
+var else = 1;
+if ( playingState == 1 )
+{
+	print "player 1 win \n";
+	var else = 0;
+} 
+if ( else == 1 )
+{
+	if ( playingState == -1 )
+	{
+		print "player 2 win \n";
+		var else = 0;
+	}
+} 
+if ( else == 1 )
+{
+	print "the game is equal!\n";
+}
 pause;
