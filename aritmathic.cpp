@@ -59,7 +59,7 @@ int Aritmathic::find_index(std::string base, int current, bool next, int tokensi
 		if (temp_index >= size)
 			return size;
 		char temp_char = base[temp_index];
-		while (temp_char != '*' && temp_char != '/' && temp_char != '+' && temp_char != '-' && temp_char != '%' && temp_char != '<' && temp_char != '=' && temp_char != '>' && temp_char != '!' && temp_char != '&' && temp_char != '|' && !in_string(base, temp_index))
+		while (!((temp_char == '*' || temp_char == '/' || temp_char == '+' || temp_char == '-' || temp_char == '%' || temp_char == '<' || temp_char == '=' || temp_char == '>' || temp_char == '!' || temp_char == '&' || temp_char == '|') && !in_string(base, temp_index)))
 		{
 			++temp_index;
 			if (temp_index >= size)
@@ -75,7 +75,7 @@ int Aritmathic::find_index(std::string base, int current, bool next, int tokensi
 		if (temp_index <= 0)
 			return 0;
 		char temp_char = base[temp_index];
-		while (temp_char != '*' && temp_char != '/' && temp_char != '+' && temp_char != '-' && temp_char != '%' && temp_char != '<' && temp_char != '=' && temp_char != '>' && temp_char != '!' && temp_char != '&' && temp_char != '|' && !in_string(base, temp_index))
+		while (!((temp_char == '*' || temp_char == '/' || temp_char == '+' || temp_char == '-' || temp_char == '%' || temp_char == '<' || temp_char == '=' || temp_char == '>' || temp_char == '!' || temp_char == '&' || temp_char == '|') && !in_string(base, temp_index)))
 		{
 			--temp_index;
 			if (temp_index <= 0)
@@ -408,7 +408,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		InternalVariable t_res;
 		if (order == 1)
 		{
-			t_res = next + previous;
+			t_res =  previous + next;
 			temp_result = var_to_str(t_res);
 			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
@@ -423,9 +423,20 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		if (temp[pre_index] == '-')
 			--pre_index;
 		if (pre_index > 0)
-			temp2.append(temp.substr(0,pre_index+1)).append(temp_result).append(temp.substr(next_index,temp.size()));
+		{
+			if (t_res.get_type() == String && !previous.positive())
+			{
+				temp2.append(temp.substr(0,pre_index+1)).append("+").append(temp_result).append(temp.substr(next_index,temp.size()));
+			}
+			else
+			{
+				temp2.append(temp.substr(0,pre_index+1)).append(temp_result).append(temp.substr(next_index,temp.size()));
+			}
+		}
 		else
+		{
 			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
+		}
 		temp = distribute_low_operands(std::string(temp2.data()));
 		//std::cout << temp << "\n";
 	}
