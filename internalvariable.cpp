@@ -1,4 +1,3 @@
-//get methods
 #ifndef _INTERNALVARIABLE_H_
 #include "internalvariable.h"
 #endif
@@ -13,6 +12,7 @@
 
 #include <iostream>
 
+//constructors
 InternalVariable::InternalVariable(bool value)
 {
 	this->value_type = Boolean;
@@ -43,6 +43,7 @@ InternalVariable::InternalVariable(char* value)
 	this->string_value = std::string(value);
 }
 
+//get methods
 bool InternalVariable::get_bool_value()
 {
 	return this->bool_value;
@@ -68,6 +69,7 @@ VariableType InternalVariable::get_type()
 	return this->value_type;
 }
 
+//set methods
 void InternalVariable::set_bool_value(bool value)
 {
 	this->bool_value = value;
@@ -98,6 +100,7 @@ void InternalVariable::set_type(VariableType value)
 	this->value_type = value;
 }
 
+//operators
 InternalVariable& InternalVariable::operator=(long long value)
 {
 	this->value_type = Integer;
@@ -156,7 +159,11 @@ InternalVariable& InternalVariable::operator=(InternalVariable other)
 	}
 	return (*this); 
 }
-
+//////////////////////////////////////////////////////////////////////////////////////
+// IMPORTANT                                                                        //
+// TODO:try to find a way with better performance to convert float/int into string  //
+// IMPORTANT                                                                        //
+//////////////////////////////////////////////////////////////////////////////////////
 InternalVariable InternalVariable::operator+(bool value)
 {
 	switch (this->value_type)
@@ -304,6 +311,7 @@ InternalVariable InternalVariable::operator+(InternalVariable other)
 	return (*this); 
 }
 
+//if we are removing the "-" operator, there is no need for these
 InternalVariable InternalVariable::operator-(bool value)
 {
 	switch (this->value_type)
@@ -380,6 +388,12 @@ InternalVariable InternalVariable::operator-(InternalVariable other)
 	return (*this); 
 }
 
+/////////////////////////////////////////////////////////////////////
+//                                                                 //
+// TODO:string*int should return a value similar to that of python //
+// e.g.: "salam"*3 = "salamsalamsalam"                             //
+//                                                                 //
+/////////////////////////////////////////////////////////////////////
 InternalVariable InternalVariable::operator*(bool value)
 {
 	switch (this->value_type)
@@ -780,6 +794,7 @@ InternalVariable InternalVariable::operator||(InternalVariable other)
 	return (long long)0; 
 }
 
+// returns if the value of our variable is positive (or zero). strings always return true 
 bool InternalVariable::positive()
 {
 	if ((this->get_type() == Boolean) || (this->get_type() == String))
@@ -792,6 +807,7 @@ bool InternalVariable::positive()
 		return false;
 }
 
+// does the "not" operation on the value
 InternalVariable InternalVariable::nots()
 {
 	if (this->get_type() == Boolean)
@@ -804,6 +820,8 @@ InternalVariable InternalVariable::nots()
 		return InternalVariable((long long)!this->get_string_value().size());
 }
 
+
+//helper functions for str_to_var(). shouldn be deleted when we rewrite that function
 long double double_pow(int a, int b)
 {
 	long double res = 1.0;
@@ -834,6 +852,7 @@ long long simple_pow (int a, int b)
 	return res;
 }
 
+//check if our srting has the char "ch". 
 bool has_char(std::string str, char ch)
 {
 	int size = str.size();
@@ -845,6 +864,14 @@ bool has_char(std::string str, char ch)
 	return false;
 }
 
+//converts a string into an internal variable
+////////////////////////////////////////////////////////////////////
+//                                                                //
+// VERY IMPORTANT                                                 //
+// TODO: this is very inefficient. should be rewritten completely // 
+// VERY IMPORTANT                                                 //
+//                                                                //
+////////////////////////////////////////////////////////////////////
 InternalVariable str_to_var(std::string str)
 {
 	if (has_char(str,'"'))
@@ -915,7 +942,11 @@ InternalVariable str_to_var(std::string str)
 		}
 	}
 }
-
+/////////////////////////////////////////////////////////////////////////////
+//                                                                         //
+// TODO: again we have to find a better way to convert numbers into string //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
 std::string var_to_str(InternalVariable var)
 {
 	if (var.get_type() == Boolean)
@@ -946,6 +977,7 @@ std::string var_to_str(InternalVariable var)
 	}
 }
 
+//does the boolean check for the calue of the variable. 0/"" mean false, others mean true.
 bool InternalVariable::condition()
 {
 	if(this->value_type == Boolean)

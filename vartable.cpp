@@ -14,6 +14,7 @@
 #include <string>
 #endif
 
+// adds a new variable into the table.
 void VarTable::add_var(std::string name)
 {
 	for (unsigned int i = 0; i < this->var_name_table.size(); ++i)
@@ -28,6 +29,7 @@ void VarTable::add_var(std::string name)
 	this->var_table.push_back(InternalVariable((long long)0));
 }
 
+// returns a variable from the table
 InternalVariable VarTable::get_var(std::string name)
 {
 	for (int i = 0; i < this->var_count; ++i)
@@ -41,6 +43,7 @@ InternalVariable VarTable::get_var(std::string name)
 	return this->get_var(name);
 }
 
+// changes a variable. adds one if not present.
 void VarTable::change_var(std::string name, InternalVariable val)
 {
 	for (int i = 0; i < this->var_count; ++i)

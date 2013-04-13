@@ -240,6 +240,9 @@ unsigned int find_in_str(std::string str, char* c)
 //the heart of the whole program
 //input:a string of arithmetic operation without parantheses or spaces:"2*4/2==6"
 //output:the result:0 (false)
+/////////////////////////////
+// TODO: add "^" operator  //
+/////////////////////////////
 std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 {
 	//operator priority
@@ -696,6 +699,7 @@ int lower(int a , int b)
 //                                                                                                      //
 // IMPORTANT                                                                                            //
 // TODO:We will have a very very very very bad problem when negative numbers are "after" the operation  //
+// we should perhaps remove the "-" operator completely, and calculate it using "+" operator            //
 // IMPORTANT                                                                                            //
 //                                                                                                      //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
