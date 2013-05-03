@@ -12,6 +12,14 @@
 
 #include <iostream>
 
+///////////////////////////////////////////////////////////////////
+//                                                               //
+// IMPORTANT                                                     //
+// TODO: We have enough memory leaks to cause a flood. Fix them. //
+// IMPORTANT                                                     //
+//                                                               //
+///////////////////////////////////////////////////////////////////
+
 //checks that if the character is in a string in the code.
 //base: base string
 //pos: position of the character in base
@@ -84,7 +92,7 @@ int Aritmathic::find_index(std::string base, int current, bool next, int tokensi
 		if (temp_index >= size)
 			return size;
 		char temp_char = base[temp_index];
-		while (!((temp_char == '*' || temp_char == '/' || temp_char == '+' || temp_char == '-' || temp_char == '%' || temp_char == '<' || temp_char == '=' || temp_char == '>' || temp_char == '!' || temp_char == '&' || temp_char == '|') && !in_string(base, temp_index)))
+		while (!((temp_char == '*' || temp_char == '/' || temp_char == '+' || temp_char == '%' || temp_char == '<' || temp_char == '=' || temp_char == '>' || temp_char == '!' || temp_char == '&' || temp_char == '|') && !in_string(base, temp_index)))
 		{
 			++temp_index;
 			if (temp_index >= size)
@@ -100,7 +108,7 @@ int Aritmathic::find_index(std::string base, int current, bool next, int tokensi
 		if (temp_index <= 0)
 			return 0;
 		char temp_char = base[temp_index];
-		while (!((temp_char == '*' || temp_char == '/' || temp_char == '+' || temp_char == '-' || temp_char == '%' || temp_char == '<' || temp_char == '=' || temp_char == '>' || temp_char == '!' || temp_char == '&' || temp_char == '|') && !in_string(base, temp_index)))
+		while (!((temp_char == '*' || temp_char == '/' || temp_char == '+' || temp_char == '%' || temp_char == '<' || temp_char == '=' || temp_char == '>' || temp_char == '!' || temp_char == '&' || temp_char == '|') && !in_string(base, temp_index)))
 		{
 			--temp_index;
 			if (temp_index <= 0)
@@ -109,58 +117,6 @@ int Aritmathic::find_index(std::string base, int current, bool next, int tokensi
 		}
 		return temp_index;
 	}
-}
-
-//returns the order in which two operators with similar priority are handled.
-//a1, a2: location of those operators. if negative, it means that there is no such operator
-//sample
-//if we have something like "3  - 9 + 5 - 1"
-//and we are going to determine which one of them is going to be done first
-//we give this function the locations of the frst instances of "+" (7) and "-" (3)
-//returns 1 if the first operand is the one to be done first
-//returns 2 if the second operand is the one to be done first
-//order_of_operands(7, 3):2
-char Aritmathic::order_of_operands(int a1, int a2)
-{
-	if (a1 < 0) return 2;
-	else if (a2 < 0 || a2 > a1) return 1;
-	else if (a2 < a1) return 2;
-	else return 1;
-}
-
-//returns the order in which three operators with similar priority (like "%", "*" and "/") are handled.
-//a1, a2, a3: location of those operators. if negative, it means that there is no such operator
-//for example "3 % 2 * 6 / 4"
-//the rest is exactly like the above
-char Aritmathic::order_of_operands(int a1, int a2, int a3)
-{
-	if (a1 < 0)
-	{
-		if (a2 < 0) return 3;
-		else if (a3 < 0 || a3 > a2) return 2;
-		else if (a3 < a2) return 3;
-	}
-	else
-	{
-		if (a2 < 0 && a3 < 0) return 1;
-		else if (a2 < 0)
-		{
-			if (a1 < a3) return 1;
-			else return 3;
-		}
-		else if (a3 < 0)
-		{
-			if (a1 < a2) return 1;
-			else return 2;
-		}
-		else
-		{
-			if (a1 < a2 && a1 < a3) return 1;
-			else if (a2 < a3 && a2 < a1) return 2;
-			else if (a3 < a2 && a3 < a1) return 3;
-		}
-	}
-	return 1;
 }
 
 //returns the number of "!" characters in "base". doesn't count "!="
@@ -237,6 +193,73 @@ unsigned int find_in_str(std::string str, char* c)
 	return -1;
 }
 
+//finds the first operator from the ones in "operators" we encounter in the string "arit"
+//returns an "operator_order" struct. "pos" will be the postion of the operator and
+//order will be the -order- of the operator in the definition
+//sample:
+//arit:"2/4%5*6"
+//find_operator(arit,"*","/","%"):operator_order{pos = 1, order = 2}
+//arit2:"2*4%5*6"
+//find_operator(arit2,"*","/","%"):operator_order{pos = 1, order = 1}
+//arit3:"2%4%5*6"
+//find_operator(arit3,"*","/","%"):operator_order{pos = 1, order = 3}
+operator_order find_operator(std::string arit, std::string operator1, std::string operator2, std::string operator3)
+{
+	int size = arit.size();
+	int operator1_size = operator1.size();
+	int operator2_size = operator2.size();
+	int operator3_size = operator3.size();
+	operator_order ret;
+	for (int i = 0; i < size; ++i)
+	{
+		if ((i + operator1_size < size) && (!in_string(arit, i)) && (arit.substr(i, operator1_size) == operator1))
+		{
+			ret.pos = i;
+			ret.order = 1;
+			return ret;
+		}
+		if ((i + operator2_size < size) && (!in_string(arit, i)) && (arit.substr(i, operator2_size) == operator2))
+		{
+			ret.pos = i;
+			ret.order = 2;
+			return ret;
+		}
+		if ((i + operator3_size < size) && (!in_string(arit, i)) && (arit.substr(i, operator3_size) == operator3))
+		{
+			ret.pos = i;
+			ret.order = 3;
+			return ret;
+		}
+	}
+	ret.pos = -1;
+	return ret;
+}
+
+operator_order find_operator(std::string arit, std::string operator1, std::string operator2)
+{
+	int size = arit.size();
+	int operator1_size = operator1.size();
+	int operator2_size = operator2.size();
+	operator_order ret;
+	for (int i = 0; i < size; ++i)
+	{
+		if ((i + operator1_size < size) && (!in_string(arit, i)) && (arit.substr(i, operator1_size) == operator1))
+		{
+			ret.pos = i;
+			ret.order = 1;
+			return ret;
+		}
+		if ((i + operator2_size < size) && (!in_string(arit, i)) && (arit.substr(i, operator2_size) == operator2))
+		{
+			ret.pos = i;
+			ret.order = 2;
+			return ret;
+		}
+	}
+	ret.pos = -1;
+	return ret;
+}
+
 //the heart of the whole program
 //input:a string of arithmetic operation without parantheses or spaces:"2*4/2==6"
 //output:the result:0 (false)
@@ -255,16 +278,16 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 	
 	//copy the main data into temp
 	std::string temp(arit.data());
-	
+
 	//handle the nots ("!")
 	//it doesn't count the nots in "!=" so we don't need to worry about it
 	while (number_of_nots(temp) > 0)
 	{
 		//find the first "not"
 		int current = find_in_str(temp, '!');
+
 		//as find_in_str() doesn't check, we have to make sure that this is not a "!=", but a real not.
-		//TODO: if that "not" is in the end of the string, it will cause an error. handle it.
-		if (temp[current+1] != '=')
+		if ((temp.size() != current+1) && (temp[current+1] != '='))
 		{
 			//find the next token (in this case: variable or number)
 			int next_index = find_index(temp, current ,1);
@@ -300,18 +323,10 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 	//handle the "*, /, %" operators
 	while (number_of_char(temp, '*') > 0 || number_of_char(temp, '/') > 0 || number_of_char(temp, '%') > 0)
 	{
-		//////////////////////////////////////////////////////////////////////////////////////////////
-		//                                                                                          //
-		// TODO: this can be optimized by making a new function designed specifically for this task //
-		//                                                                                          //
-		//////////////////////////////////////////////////////////////////////////////////////////////	
-		//we should calculate the operators from left to right. all these are to find the one we should calculate first
-		//see order_of_operands() for more information
-		int currentstar = find_in_str(temp, '*'), currentslash = find_in_str(temp, '/'), currentpercent = find_in_str(temp, '%'), current;
-		int order = order_of_operands(currentstar, currentslash, currentpercent);
-		if (order == 1) current = currentstar;
-		else if (order == 2) current = currentslash;
-		else current = currentpercent;
+		//we should calculate the operators from left to right. so we use this function
+		operator_order ord = find_operator(temp, "*", "/", "%");
+		int order = ord.order;
+		int current = ord.pos;
 
 		// now that we know which operator to calculate first, we should find the variables to do the operation on
 		//find the location of those variables in the string
@@ -333,9 +348,6 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			
 			//create a string out of it
 			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 		else if (order == 2) // it means "/"
 		{
@@ -344,9 +356,6 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			
 			//create a string out of it
 			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 		else // it means "%"
 		{
@@ -355,46 +364,24 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			
 			//create a string out of it
 			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 
 		//replace the older operation with the result
 		std::string temp2("");
 		if (pre_index > 0)
-			temp2.append(temp.substr(0,pre_index)).append(temp_result).append(temp.substr(next_index,temp.size()));
+			temp2.append(temp.substr(0,pre_index+1)).append(temp_result).append(temp.substr(next_index,temp.size()));
 		else
 			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
 			
 		//change the temp
-		temp = std::string(temp2.data());
+		temp = handle_minuses_and_pluses(temp2.data());
 	}
 
-	//handle the "+, -" operators
-	while (number_of_char(temp, '+') > 0 || number_of_char(temp, '-') > 0)
+	//handle the "+" operator
+	while (number_of_char(temp, '+') > 0)
 	{
-		//we should calculate the operators from left to right. all these are to find the one we should calculate first
-		//see order_of_operands() for more information
-		int currentcross = find_last_of_in_str(temp ,'+'), currentdash = find_last_of_in_str(temp ,'-'), current;
-		int order = order_of_operands(currentdash, currentcross);
-		if ((currentcross >= 0) && (order == 1 || currentdash < 0)) 
-		{
-			current = currentcross;
-			order = 1;
-		}
-		else
-		{
-			current = currentdash;
-			order = 2;
-		}
-		
-		//this is a little tricky. we may end up with something like "+5" or "-3".
-		//in the current implemention, we will end up in the loop forever.
-		//so we should exit the loop if this is the case.
-		int num_operands = number_of_char(temp, '/') + number_of_char(temp, '-') + number_of_char(temp, '+') + number_of_char(temp, '*') + number_of_char(temp, '%');
-		if ((num_operands == 1) && (((number_of_char(temp, '-') == 1) && (temp[0] == '-')) || ((number_of_char(temp, '+') == 1) && (temp[0] == '+'))))
-			break;
+		//finding the first "+"
+		int	current = find_last_of_in_str(temp ,'+');
 
 		//now that we know which operator to calculate first, we should find the variables to do the operation on
 		//find the location of those variables in the string
@@ -408,49 +395,19 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		std::string temp_result;
 		InternalVariable t_res;
 		
+		//do the calculation
+		t_res =  previous + next;
 		
-		if (order == 1) // it means "+"
-		{
-			//do the calculation
-			t_res =  previous + next;
-			
-			//create a string out of it
-			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
-		}
-		else if (order == 2) // it means "-"
-		{
-			//do the calculation
-			t_res = previous - next;
-			
-			//create a string out of it
-			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
-		}
+		//create a string out of it
+		temp_result = var_to_str(t_res);
 
 		//create a clean string
 		std::string temp2("");
 		
-		//really don't remember the exact reason. but it won't work otherwise
-		if (temp[pre_index] == '-')
-			--pre_index;
-		
 		//replace the older operation with the result
 		if (pre_index > 0)
 		{
-			//again like above. just it won't work if it is not implemented like this
-			if (t_res.get_type() == String && !previous.positive())
-			{
-				temp2.append(temp.substr(0,pre_index+1)).append("+").append(temp_result).append(temp.substr(next_index,temp.size()));
-			}
-			else
-			{
-				temp2.append(temp.substr(0,pre_index+1)).append(temp_result).append(temp.substr(next_index,temp.size()));
-			}
+			temp2.append(temp.substr(0,pre_index+1)).append(temp_result).append(temp.substr(next_index,temp.size()));
 		}
 		else
 		{
@@ -459,7 +416,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 		
 		//distribute_low_operands() is to avoid and handle something like "2&&+3" which will certainly cause some major 
 		//problems for this very loop (and the whole operation)
-		temp = distribute_low_operands(std::string(temp2.data()));
+		temp = handle_minuses_and_pluses(std::string(temp2.data()));
 	}
 
 	//handle "&&", "||" and "!="
@@ -467,13 +424,10 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 	int currentand = find_in_str(temp, "&&"), currentor = find_in_str(temp, "||"), currentnotequal = find_in_str(temp ,"!=");
 	while (currentand >= 0 || currentor >= 0 || currentnotequal >= 0)
 	{
-		//we should calculate the operators from left to right. all these are to find the one we should calculate first
-		//see order_of_operands() for more information
-		int current;
-		int order = order_of_operands(currentand, currentor, currentnotequal);
-		if (order == 1) current = currentand;
-		else if (order == 2) current = currentor;
-		else current = currentnotequal;
+		//we should calculate the operators from left to right. so we use this function
+		operator_order ord = find_operator(temp, "&&", "||", "!=");
+		int order = ord.order;
+		int current = ord.pos;
 
 		// now that we know which operator to calculate first, we should find the variables to do the operation on
 		//find the location of those variables in the string
@@ -495,14 +449,6 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			
 			//create a string out of it
 			temp_result = var_to_str(t_res);
-			
-			///////////////////////////////////////////////////////////////////////////
-			//                                                                       //
-			//TODO: Check if they are still needed after the change of the priorities//
-			//                                                                       //
-			///////////////////////////////////////////////////////////////////////////
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 		else if (order == 2) // it means "||"
 		{
@@ -511,9 +457,6 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			
 			//create a string out of it
 			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 		else // it means "!="
 		{
@@ -522,9 +465,6 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			
 			//create a string out of it
 			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 
 		//replace the older operation with the result
@@ -535,7 +475,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
 			
 		//change the temp
-		temp = std::string(temp2.data());
+		temp = handle_minuses_and_pluses(temp2.data());
 
 		//search for the operations again
 		currentand = find_in_str(temp ,"&&");
@@ -548,13 +488,10 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 	int currentequal = find_in_str(temp, "=="), currentmore = find_in_str(temp, ">="), currentless = find_in_str(temp ,"<=");
 	while (currentequal >= 0 || currentmore >= 0 || currentless >= 0)
 	{
-		//we should calculate the operators from left to right. all these are to find the one we should calculate first
-		//see order_of_operands() for more information
-		int current;
-		int order = order_of_operands(currentequal, currentmore, currentless);
-		if (order == 1) current = currentequal;
-		else if (order == 2) current = currentmore;
-		else current = currentless;
+		//we should calculate the operators from left to right. so we use this function
+		operator_order ord = find_operator(temp, "==", ">=", "<=");
+		int order = ord.order;
+		int current = ord.pos;
 
 		// now that we know which operator to calculate first, we should find the variables to do the operation on
 		//find the location of those variables in the string
@@ -576,9 +513,6 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			
 			//create a string out of it
 			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 		else if (order == 2) // it means ">="
 		{
@@ -587,9 +521,6 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			
 			//create a string out of it
 			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 		else // it means "<="
 		{
@@ -598,9 +529,6 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			
 			//create a string out of it
 			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 
 		//replace the older operation with the result
@@ -611,7 +539,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
 		
 		//change the temp
-		temp = std::string(temp2.data());
+		temp = handle_minuses_and_pluses(temp2.data());
 
 		//search for the operations again
 		currentequal = find_in_str(temp, "==");
@@ -622,12 +550,10 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 	//handle ">" and "<"
 	while (number_of_char(temp, '>') > 0 || number_of_char(temp, '<') > 0)
 	{
-		//we should calculate the operators from left to right. all these are to find the one we should calculate first
-		//see order_of_operands() for more information
-		int currentmore = find_in_str(temp, '>'), currentless = find_in_str(temp, '<'), current;
-		int order = order_of_operands(currentmore, currentless);
-		if (order == 1) current = currentmore;
-		else current = currentless;
+		//we should calculate the operators from left to right. so we use this function
+		operator_order ord = find_operator(temp, ">", "<");
+		int order = ord.order;
+		int current = ord.pos;
 
 		// now that we know which operator to calculate first, we should find the variables to do the operation on
 		//find the location of those variables in the string
@@ -650,9 +576,6 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			
 			//create a string out of it
 			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 		else // it means "<"
 		{
@@ -661,9 +584,6 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			
 			//create a string out of it
 			temp_result = var_to_str(t_res);
-			
-			//very important: needed for "+" and "-"'s proper work
-			if ((t_res.positive()) && (t_res.get_type() != String)) temp_result = std::string("+").append(temp_result.data());
 		}
 		
 		//replace the older operation with the result
@@ -674,7 +594,7 @@ std::string Aritmathic::aritmathic_no_parantheses_int(std::string arit)
 			temp2.append(temp_result).append(temp.substr(next_index,temp.size()));
 			
 		//change the temp
-		temp = std::string(temp2.data());
+		temp = handle_minuses_and_pluses(temp2.data());
 	}
 
 	//after we calculated all of the operations, we have only one variable (string) left. return it.
@@ -691,59 +611,68 @@ int lower(int a , int b)
 	else return a;
 }
 
-//removes or distrubutes "+" and "-" charachters when they are "after" another operand.
-//sample:
-//distribute_low_operands("5+3<+7"):"5+3<7"
-//distribute_low_operands("6+9*-7/-6%2*-5"):"6-9*7/6%2*5"
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                                                                                                      //
-// IMPORTANT                                                                                            //
-// TODO:We will have a very very very very bad problem when negative numbers are "after" the operation  //
-// we should perhaps remove the "-" operator completely, and calculate it using "+" operator            //
-// IMPORTANT                                                                                            //
-//                                                                                                      //
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::string Aritmathic::distribute_low_operands(std::string arit)
+//adds a "+" before "lone" minuses. changes "--" to "+" or removes them
+//a lone minus is one where the charachter before it is a number
+//removes non-lone pluses
+std::string Aritmathic::handle_minuses_and_pluses(std::string arit)
 {
 	std::string temp(arit.data());
+	int i = 1, size = temp.size();
+
+	if ((size >= 2) && (temp[0] == '-') && (temp[1] == '-'))
+	{
+		temp = temp.substr(2,size);
+		size -= 2;
+	}
+
 	while (true)
 	{
-		int size = temp.size();
-		int m1 = lower(find_in_str(temp ,"--"), find_in_str(temp ,"++")), m2 = lower(find_in_str(temp ,"*+"), lower(find_in_str(temp ,"/+"), lower(find_in_str(temp ,"%+"), lower(find_in_str(temp ,"<+") , lower(find_in_str(temp ,">+"), lower(find_in_str(temp ,"!+"), lower(find_in_str(temp ,"=+"), lower(find_in_str(temp ,"&+"), find_in_str(temp ,"|+")))))))))
-			,  m3 = lower(find_in_str(temp ,"*-"), lower(find_in_str(temp ,"/-"), lower(find_in_str(temp ,"%-"), lower(find_in_str(temp ,"<-") , lower(find_in_str(temp ,">-"), lower(find_in_str(temp ,"!-"), lower(find_in_str(temp ,"=-"), lower(find_in_str(temp ,"&-"), find_in_str(temp ,"|-")))))))));
-		if (m1 == 0)
-		{
-			temp = temp.substr (2, size);
-			continue;
-		}
-		else if (m1 >= 0)
-		{
-			temp = temp.substr(0, m1).append(std::string("+")).append(temp.substr(m1+2, size));
-			continue;
-		}
+		if (i >= size)
+			break;
 
-		if (m2 >= 0)
-		{
-			temp = temp.substr(0, m2+1).append(temp.substr(m2+2, size));
-			continue;
-		}
+		char s = temp[i-1];
 
-		if (m3 >= 0)
+		if (temp[i] == '-')
 		{
-			int last = find_index_minus(temp, m3);
-			if (last <= 0)
+			if (i+1 < size)
 			{
-				temp = std::string("-").append(temp.substr(0, m3+1)).append(temp.substr(m3+2, size));
+				char t = temp[i+1];
+				if (t == '-')
+				{
+					if ((s != '=') && (s != '<') && (s != '>') && (s != '/') && (s != '+') && (s != '&') && (s != '|') && (s != '%') && (s != '*'))
+					{
+						temp = std::string(temp.substr(0, i).data()).append("+").append(temp.substr(i+2, size));
+						--size;
+						s = temp[i];
+					}
+					else
+					{
+						temp = std::string(temp.substr(0, i).data()).append(temp.substr(i+2, size));
+						size -= 2;
+						i -= 1;
+						s = temp[i];
+					}
+				}
 			}
-			else
+
+			if ((s != '=') && (s != '<') && (s != '>') && (s != '/') && (s != '+') && (s != '&') && (s != '|') && (s != '%') && (s != '*'))
 			{
-				temp = temp.substr(0, m3+1).append(temp.substr(m3+2, size));
-				if (temp[last] == '-') temp[last] = '+';
-				else temp[last] = '-';
+				temp = std::string(temp.substr(0, i).data()).append("+").append(temp.substr(i, size));
+				++size;
+				++i;
 			}
-			continue;
+
 		}
-		break;
+		else if (temp[i] == '+')
+		{
+			if ((s == '=') || (s == '<') || (s == '>') || (s == '/') || (s == '+') || (s == '&') || (s == '|') || (s == '%') || (s == '*') || (s == '-'))
+			{
+				temp = std::string(temp.substr(0, i).data()).append(temp.substr(i+1, size));
+				--size;
+				--i;
+			}
+		}
+		++i;
 	}
 	return temp;
 }
@@ -778,17 +707,6 @@ InternalVariable Aritmathic::parse_aritmathic(std::string arit)
 	bool has_par = false;
 	
 	//check if the number of openings and closings are equal
-	///////////////////////////////////////////////////////////////////////////////////////////////
-	//                                                                                           //
-	// TODO: this should be done only once in the start of the program for furthur optimizations //
-	//               --remember to check for the existance of the parantheses--                  //
-	//                                                                                           //
-	///////////////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////
-	//                                                 //
-	// TODO: this should also find the cases like ")(" //
-	//                                                 //
-	/////////////////////////////////////////////////////
 	for (unsigned int i = 0; i < arit.size(); ++i)
 	{
 		if (arit[i] == '(')
@@ -798,51 +716,49 @@ InternalVariable Aritmathic::parse_aritmathic(std::string arit)
 		}
 		else if (arit[i] == ')')
 			temp_par--;
+
+		//if we have mismatching parantheses
+		if (temp_par < 0)
+			return (bool)0;
 	}
-	
-	//if we have mismatching parantheses
-	if (temp_par != 0)
-		return (bool)0;
+
+	//if we don't have any parantheses, go on and just calculate the whole thing
+	if (!has_par)
+	{
+		return str_to_var(aritmathic_no_parantheses_int(handle_minuses_and_pluses(arit)).data());
+	}
 	else
 	{
-		//if we don't have any parantheses, go on and just calculate the whole thing
-		if (!has_par)
+		//now we should handle the parantheses. copy the insides of arit
+		std::string temp(arit.data());
+		
+		//we will replace the parantheses with their arithmetic equivalant until there isn't any remaining
+		while (number_of_char(temp, '('))
 		{
-			return str_to_var(aritmathic_no_parantheses_int(distribute_low_operands(arit)).data());
-		}
-		else
-		{
-			//now we should handle the parantheses. copy the insides of arit
-			std::string temp(arit.data());
+			//we need a clear string first
+			std::string temp2("");
 			
-			//we will replace the parantheses with their arithmetic equivalant until there isn't any remaining
-			while (number_of_char(temp, '('))
-			{
-				//we need a clear string first
-				std::string temp2("");
-				
-				//find the beginning and ending of the first innermost parantheses
-				int* pos = find_parantheses(temp);
-				
-				//create a variable to store the size so we don't need to call the function 4-5 times.
-				int size = temp.size();
-				
-				//find the arithmetic equivalant of the parantheses.
-				std::string temp_result = aritmathic_no_parantheses_int(distribute_low_operands(temp.substr(pos[0]+1, pos[1]-pos[0]-1))), last_par = (pos[1]+1 > size? std::string("") : temp.substr(pos[1]+1,size));
-				
-				//and put it in their place
-				if (pos[0] > 0)
-					temp2.append(temp.substr(0,pos[0])).append(temp_result).append(last_par);
-				else
-					temp2.append(temp_result).append(last_par);
-					
-				//now change the "temp"
-				temp = std::string(temp2.data());
-			}
+			//find the beginning and ending of the first innermost parantheses
+			int* pos = find_parantheses(temp);
 			
-			//we don't have any paranthese left. so try the calculate the arithmetic result one more time and return the result as an InternalVariable.
-			return str_to_var(aritmathic_no_parantheses_int(distribute_low_operands(temp)).data());
+			//create a variable to store the size so we don't need to call the function 4-5 times.
+			int size = temp.size();
+			
+			//find the arithmetic equivalant of the parantheses.
+			std::string temp_result = aritmathic_no_parantheses_int(handle_minuses_and_pluses(temp.substr(pos[0]+1, pos[1]-pos[0]-1))), last_par = (pos[1]+1 > size? std::string("") : temp.substr(pos[1]+1,size));
+			
+			//and put it in their place
+			if (pos[0] > 0)
+				temp2.append(temp.substr(0,pos[0])).append(temp_result).append(last_par);
+			else
+				temp2.append(temp_result).append(last_par);
+				
+			//now change the "temp"
+			temp = std::string(temp2.data());
 		}
+		
+		//we don't have any paranthese left. so try the calculate the arithmetic result one more time and return the result as an InternalVariable.
+		return str_to_var(aritmathic_no_parantheses_int(handle_minuses_and_pluses(temp)).data());
 	}
 	
 	//something went wrong. return false.
