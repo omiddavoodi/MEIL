@@ -495,12 +495,12 @@ void Interpreter::get_statement(std::string statement)
 void Interpreter::if_statement(std::string statement)
 {
 	//do we have an "else"?
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// VERY IMPORTANT                                                                                                              //
-	// TODO: this is buggy. if we have a variable that has the string "else" somewhere in its name the whole thing will collapse   //
-	// also, if we have to "if" block inside each other, the else for the one inside will cause major problems for the one outside //
-	// VERY IMPORTANT                                                                                                              //
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// VERY IMPORTANT                                                                                                               //
+	// TODO: this is buggy. if we have a variable that has the string "else" somewhere in its name the whole thing will collapse    //
+	// also, if we have two "if" block inside each other, the else for the one inside will cause major problems for the one outside //
+	// VERY IMPORTANT                                                                                                               //
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	int else_loc = find_in_str(statement, "else");
 	if (else_loc == -1)
 	{
