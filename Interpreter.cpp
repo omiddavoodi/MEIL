@@ -350,7 +350,7 @@ InternalVariable Interpreter::do_arit(std::string statement)
 			
 			//replace the names with values
 			level3 = level3.substr(0, temp.pos).append(var_to_str(tempvar)).append(level3.substr(temp.pos + temp.str.size(),size));
-            
+			
 			//now we should handle the "++" and "--" after the variables. they are changed --after-- we replace the names with values.
 			//it works similar to the code above
 			int nextpp = get_plusplus_argument(level3, temp.pos + temp.str.size());
@@ -425,6 +425,7 @@ void Interpreter::var_statement(std::string statement)
 		
 		//change its value
 		this->variable_table.change_var(name, do_arit(level2.substr(equal+1,end-equal-1)));
+		std::cout << do_arit(level2.substr(equal+1,end-equal-1)).get_int_value();
 	}
 }
 
@@ -522,11 +523,11 @@ int is_not_in_block(std::string temp, int loc)
 	int ret = 0;
 	for (int i = 0; i < loc; ++i)
 	{
-		if (statement[i] == '{')
+		if (temp[i] == '{')
 		{
 			++ret;
 		}
-		else if (statement[i] == '}')
+		else if (temp[i] == '}')
 		{
 			--ret;
 		}
@@ -714,7 +715,7 @@ void Interpreter::for_statement(std::string statement)
 	
 	//find the location of the parantheses
 	int par1 = find_in_str(level2, '(');
-	int par2 = find_in_str(level2.substr(par1+1, level2.size()), ')')+par1+1;
+	int par2 = find_last_of_in_str(level2.substr(par1+1, begin), ')')+par1+1;
 	
 	//the statement that is to be done only once
 	std::string str_one_time = level2.substr(par1+1,scl1);
@@ -727,7 +728,7 @@ void Interpreter::for_statement(std::string statement)
 	
 	//run the statement that is to be done once
 	statement_analyzer(str_one_time);
-	
+
 	//se do_arit to find the result for condition
 	InternalVariable condition = do_arit(str_condition);
 	
