@@ -491,17 +491,70 @@ void Interpreter::get_statement(std::string statement)
 	this->variable_table.change_var(name, str_to_var(std::string(input)));
 }
 
+//finds the end ("}") of the first "{}" block.
+//sample:
+//find_end_of_block("if (a==2){while(s>1){++i}}"): 25
+int find_end_of_block(std::string statement)
+{
+	int size = statement.size();
+	int nbs = 0;
+	for (int i = 0; i <  size; ++i)
+	{
+		if (statement[i] == '{')
+		{
+			++nbs;
+		}
+		else if (statement[i] == '}')
+		{
+			--nbs;
+			if (nbs == 0)
+			{
+				return i;
+			}
+		}
+	}
+	return -1;
+}
+
+//determines if the current position isn't in a "{}" block
+int is_not_in_block(std::string temp, int loc)
+{
+	int ret = 0;
+	for (int i = 0; i < loc; ++i)
+	{
+		if (statement[i] == '{')
+		{
+			++ret;
+		}
+		else if (statement[i] == '}')
+		{
+			--ret;
+		}
+	}
+	if (ret == 0)
+		return true;
+	return false;
+}
+
+//finds the next "else" statement in the code
+int find_next_else(std::string temp)
+{
+	int size = temp.size();
+	for (int i = 0; i < (size - 3); ++i)
+	{
+		if ((temp[i] == 'e') && (temp[i+1] == 'l') && (temp[i+2] == 's') && (temp[i+3] == 'e') && (!inside_string(temp, i)) && (is_not_in_block(temp, i)))
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 //if statement
 void Interpreter::if_statement(std::string statement)
 {
 	//do we have an "else"?
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// VERY IMPORTANT                                                                                                               //
-	// TODO: this is buggy. if we have a variable that has the string "else" somewhere in its name the whole thing will collapse    //
-	// also, if we have two "if" block inside each other, the else for the one inside will cause major problems for the one outside //
-	// VERY IMPORTANT                                                                                                               //
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	int else_loc = find_in_str(statement, "else");
+	int else_loc = find_next_else(statement);
 	if (else_loc == -1)
 	{
 		//no else, dive directly into the if itself
@@ -524,6 +577,10 @@ void Interpreter::if_statement(std::string statement)
 	}
 	else
 	{
+		//////////////////////////////////////////////////////////////////
+		// IMPORTANT:Work In Progress                                   //
+		// This is untested. I'm going to compile it with Visual Studio //
+		//////////////////////////////////////////////////////////////////
 		//we have an else. we should first check the main if. so remove it.
 		std::string level2 = statement.substr(2, else_loc - 2);
 		
@@ -531,14 +588,7 @@ void Interpreter::if_statement(std::string statement)
 		int begin = find_in_str(level2, '{');
 		
 		//but the end if not the same as above.
-		///////////////////////////////////////////////////////////////////////////////////////
-		// VERY IMPORTANT                                                                    //
-		// TODO:the result will be horrible if we have another {} block inside the other one //
-		// instead, use the last "}" before the next "else" instead. "else" should be        //
-		// debugged first                                                                    //
-		// VERY IMPORTANT                                                                    //
-		///////////////////////////////////////////////////////////////////////////////////////
-		int end = find_in_str(level2.substr(begin, level2.size()), '}')+begin;
+		int end = find_end_of_block(level2)+begin;
 		
 		//get a substring for the condition and use do_arit to find the result
 		InternalVariable condition = do_arit(level2.substr(0,begin));
@@ -567,7 +617,7 @@ void Interpreter::if_statement(std::string statement)
 				level2 = level2.substr(else_loc + 4, size);
 				
 				//find the location of the next "else"
-				int next_else = find_in_str(level2, "else");
+				int next_else = find_next_else(level2);
 				
 				//find the start of our code block
 				int begin = find_in_str(level2, '{');
@@ -587,12 +637,7 @@ void Interpreter::if_statement(std::string statement)
 				}
 				
 				//find the end of the block
-				//////////////////////////////////////////////////////////////////////////////
-				//                                                                          //
-				// TODO: probably we can use find_last_of_in_str() to get the "}" this time //
-				//                                                                          //
-				//////////////////////////////////////////////////////////////////////////////
-				int end = find_in_str(current_block.substr(begin, current_block.size()), '}')+begin;
+				int end = find_end_of_block(current_block)+begin;
 
 				//defind the "condition" variable with the value of true as default
 				InternalVariable condition = true;
