@@ -821,7 +821,7 @@ InternalVariable InternalVariable::nots()
 }
 
 
-//helper functions for str_to_var(). shouldn be deleted when we rewrite that function
+//helper function for str_to_var().
 long double double_pow(int a, int b)
 {
 	long double res = 1.0;
@@ -838,16 +838,6 @@ long double double_pow(int a, int b)
 		{
 			res /= a;
 		}
-	}
-	return res;
-}
-
-long long simple_pow (int a, int b)
-{
-	long long res = 1;
-	for (int i = 0; i < b; ++i)
-	{
-		res *= a;
 	}
 	return res;
 }
@@ -916,24 +906,25 @@ InternalVariable str_to_var(std::string str)
 			long long res = 0;
 			for (int i = 0; i < size; ++i)
 			{
+				res *= 10;
 				if (str[i] == '1')
-					res += (simple_pow(10,(size - i - 1)));
+					res += 1;
 				else if (str[i] == '2')
-					res += (2 * simple_pow(10,(size - i - 1)));
+					res += 2;
 				else if (str[i] == '3')
-					res += (3 * simple_pow(10,(size - i - 1)));
+					res += 3;
 				else if (str[i] == '4')
-					res += (4 * simple_pow(10,(size - i - 1)));
+					res += 4;
 				else if (str[i] == '5')
-					res += (5 * simple_pow(10,(size - i - 1)));
+					res += 5;
 				else if (str[i] == '6')
-					res += (6 * simple_pow(10,(size - i - 1)));
+					res += 6;
 				else if (str[i] == '7')
-					res += (7 * simple_pow(10,(size - i - 1)));
+					res += 7;
 				else if (str[i] == '8')
-					res += (8 * simple_pow(10,(size - i - 1)));
+					res += 8;
 				else if (str[i] == '9')
-					res += (9 * simple_pow(10,(size - i - 1)));
+					res += 9;
 				else if (str[i] == '-')
 					x *= -1;
 			}
@@ -977,7 +968,7 @@ std::string var_to_str(InternalVariable var)
 	}
 }
 
-//does the boolean check for the calue of the variable. 0/"" mean false, others mean true.
+//does the boolean check for the calue of the variable. 0 or "" mean false, others mean true.
 bool InternalVariable::condition()
 {
 	if(this->value_type == Boolean)

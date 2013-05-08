@@ -22,6 +22,10 @@
 #include <iostream>
 #endif
 
+#ifndef _STDIO_H_
+#include <stdio.h>
+#endif
+
 // global helper
 std::string g_previous_statement("");
 
@@ -138,6 +142,8 @@ Token get_next_token(std::string base, char* it, unsigned int pos = 0)
 		{
 			if (i == size-1)
 			{
+				if (is_in_string(base[i], it))
+					i--;
 				Token ret;
 				ret.str = base.substr(start, i - start + 1);
 				ret.pos = start;
@@ -348,9 +354,15 @@ InternalVariable Interpreter::do_arit(std::string statement)
 			//chaneg the size to correspond with the new one
   			size = level3.size();
 			
+			//we need the string value of tempvar for our next steps
+			std::string tempstring = var_to_str(tempvar);
+
 			//replace the names with values
-			level3 = level3.substr(0, temp.pos).append(var_to_str(tempvar)).append(level3.substr(temp.pos + temp.str.size(),size));
-			
+			level3 = level3.substr(0, temp.pos).append(tempstring).append(level3.substr(temp.pos + temp.str.size(),size));
+
+			//change the value of the temp
+			temp.str = tempstring;
+
 			//now we should handle the "++" and "--" after the variables. they are changed --after-- we replace the names with values.
 			//it works similar to the code above
 			int nextpp = get_plusplus_argument(level3, temp.pos + temp.str.size());
@@ -371,9 +383,7 @@ InternalVariable Interpreter::do_arit(std::string statement)
                      level3 = level3.substr(0, nextmm).append(level3.substr(nextmm+2,size));
                  }
             }
-			///////////////////////////////////////////////////////////////////////////////////////////
-			// TODO: I think we should reposition the "temp" token after this. it may cause problems //
-			///////////////////////////////////////////////////////////////////////////////////////////
+
 			//again change the size
   			size = level3.size();
 		}
@@ -382,7 +392,7 @@ InternalVariable Interpreter::do_arit(std::string statement)
 	//now that we have replaced the variable names with their values, we have a string with only values,
 	//operators and whitespaces. we should remove them now as parse_aritmathic() doesn't support whitespaces
 	level3 = remove_whitespaces(level3);
-	
+
 	//now, send the result to aritmethic unit for final computation
 	Aritmathic s;
 	return s.parse_aritmathic(level3);
@@ -424,17 +434,11 @@ void Interpreter::var_statement(std::string statement)
 		this->variable_table.add_var(name);
 		
 		//change its value
-		this->variable_table.change_var(name, do_arit(level2.substr(equal+1,end-equal-1)));
-		std::cout << do_arit(level2.substr(equal+1,end-equal-1)).get_int_value();
+		this->variable_table.change_var(name, do_arit(remove_whitespaces(level2.substr(equal+1,end-equal-1))));
 	}
 }
 
 //print statement.
-//////////////////////////////////////////////////////////
-//                                                      //
-// TODO: find a faster way to do the printing (printf?) //
-//                                                      //
-//////////////////////////////////////////////////////////
 void Interpreter::print_statement(std::string statement)
 {
 	//remove the "print" itself
@@ -450,19 +454,23 @@ void Interpreter::print_statement(std::string statement)
 	//now we should print the "result" depending on the type of the variable
 	if (output.get_type() == Boolean)
 	{
-		std::cout << output.get_bool_value();
+		printf("%d", (int)(output.get_bool_value()));
+		//std::cout << output.get_bool_value();
 	} 
 	else if (output.get_type() == Integer)
 	{
-		std::cout << output.get_int_value();
+		printf("%Ld", output.get_int_value());
+		//std::cout << output.get_int_value();
 	}
 	else if (output.get_type() == Float)
 	{
-		std::cout << output.get_float_value();
+		printf("%Lf", output.get_float_value());
+		//std::cout << output.get_float_value();
 	}
 	else if (output.get_type() == String)
 	{
-		std::cout << output.get_string_value();
+		printf("%s", output.get_string_value().data());
+		//std::cout << output.get_string_value();
 	}
 }
 
@@ -578,10 +586,6 @@ void Interpreter::if_statement(std::string statement)
 	}
 	else
 	{
-		//////////////////////////////////////////////////////////////////
-		// IMPORTANT:Work In Progress                                   //
-		// This is untested. I'm going to compile it with Visual Studio //
-		//////////////////////////////////////////////////////////////////
 		//we have an else. we should first check the main if. so remove it.
 		std::string level2 = statement.substr(2, else_loc - 2);
 		
@@ -756,21 +760,18 @@ void Interpreter::statement_analyzer(std::string statement)
 		std::string level1 = remove_whitespaces(statement, true);
 		
 		//if it was "var"
-		if (level1.find("var ") == 0)
+		if (level1.find("var") == 0 && is_in_string(level1[3], "\t\n "))
 		{
 			var_statement(level1);
 		}
 		//if it was print
 		//we should be able to handle print("salam"); too. so the next characte is not necessarily a space
-		/////////////////////////////////////////////////
-		//TODO: do this for all of the other statements//
-		/////////////////////////////////////////////////
 		else if (level1.find("print") == 0 && is_in_string(level1[5], "\t\n ("))
 		{
 			print_statement(level1);
 		}
 		//if it was get
-		else if (level1.find("get ") == 0)
+		else if (level1.find("get") == 0 && is_in_string(level1[3], "\t\n "))
 		{
 			get_statement(level1);
 		}
@@ -1006,11 +1007,8 @@ void Interpreter::code_analyzer(std::string code, bool checked)
                 temp = temp2;
             }
 			
-			/////////////////////////////////////////////////////////////////////////
-			//VERY IMPORTANT                                                       //
-			//TODO: i think this is an extra analyzement. check if we can remove it//
-			//VERY IMPORTANT                                                       //
-			/////////////////////////////////////////////////////////////////////////
+			//We have found the next statement when we were trying to find if there is no "else" left
+			//so we should analize it too.
             statement_analyzer(temp.str);
         }
 		//it was not an "if"
