@@ -24,6 +24,7 @@ class VarTable
 		void add_var(std::string name);
 		InternalVariable get_var(std::string name);
 		void change_var(std::string name, InternalVariable val);
+		void add_to_var(std::string name, int val);
 };
 
 #endif

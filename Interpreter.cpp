@@ -241,7 +241,7 @@ int get_plusplus_argument(std::string base, int location, bool next = true, bool
            {
                if (!is_whitespace(base[i]))
                {
-                   if (i > 1 && (base[i] == '+' && base[i-1] == '+'))
+                   if (i > 0 && (base[i] == '+' && base[i-1] == '+'))
                    {
                       return i-1;
                    }
@@ -262,7 +262,7 @@ int get_plusplus_argument(std::string base, int location, bool next = true, bool
            {
                if (!is_whitespace(base[i]))
                {
-                   if (i > 1 && (base[i] == '-' && base[i-1] == '-'))
+                   if (i > 0 && (base[i] == '-' && base[i-1] == '-'))
                    {
                       return i-1;
                    }
@@ -360,9 +360,6 @@ InternalVariable Interpreter::do_arit(std::string statement)
 			//replace the names with values
 			level3 = level3.substr(0, temp.pos).append(tempstring).append(level3.substr(temp.pos + temp.str.size(),size));
 
-			//change the value of the temp
-			temp.str = tempstring;
-
 			//now we should handle the "++" and "--" after the variables. they are changed --after-- we replace the names with values.
 			//it works similar to the code above
 			int nextpp = get_plusplus_argument(level3, temp.pos + temp.str.size());
@@ -383,6 +380,9 @@ InternalVariable Interpreter::do_arit(std::string statement)
                      level3 = level3.substr(0, nextmm).append(level3.substr(nextmm+2,size));
                  }
             }
+
+			//change the value of the temp
+			temp.str = tempstring;
 
 			//again change the size
   			size = level3.size();
@@ -750,6 +750,74 @@ void Interpreter::for_statement(std::string statement)
 	}
 }
 
+//checks for statements like "a = 2" and run them
+void Interpreter::check_for_assignment_statement(std::string statement)
+{
+	//find the "=" charachter.
+	int equal = find_in_str(statement, '=');
+	
+	//find the semicolon which is the end of the statement
+	int end = find_in_str(statement, ';');
+	
+	//if we have a "=", there is an assignment
+	if (equal > 0)
+	{
+		//from the beginning to equal is the name of our variable. we should remove the whitespaces though
+		std::string name = remove_whitespaces(statement.substr(0,equal));
+		
+		//change the value of the variable
+		this->variable_table.change_var(name, do_arit(remove_whitespaces(statement.substr(equal+1,end-equal-1))));
+	}
+	//it may still be a ++/-- statement
+	else
+	{
+		Token temp;
+		temp.str = std::string("");
+		temp.pos = 0;
+		
+		//get the "variable"
+		temp = get_next_token(statement, "!%&*()/|-+<>= \n\t;" ,0);
+
+		//do we have a ++ before it?
+		int tempint = get_plusplus_argument(statement, temp.pos - 1, false);
+
+		//if we do, let's handle it
+		if (tempint >= 0)
+		{
+			this->variable_table.add_to_var(temp.str, 1);
+		}
+		//check for other occurances
+		else
+		{
+			//-- before
+			tempint = get_plusplus_argument(statement, temp.pos - 1, false, false);
+			if (tempint >= 0)
+			{
+				this->variable_table.add_to_var(temp.str, -1);
+			}
+		}
+
+		//do we have a ++ after it?
+		tempint = get_plusplus_argument(statement, temp.pos + temp.str.size());
+
+		//if we do, let's handle it
+		if (tempint >= 0)
+		{
+			this->variable_table.add_to_var(temp.str, 1);
+		}
+		//check for other occurances
+		else
+		{
+			//-- after
+			tempint = get_plusplus_argument(statement, temp.pos + temp.str.size(), true, false);
+			if (tempint >= 0)
+			{
+				this->variable_table.add_to_var(temp.str, -1);
+			}
+		}
+	}
+}
+
 //analyzes a single statement and calls the proper function for it
 void Interpreter::statement_analyzer(std::string statement)
 {
@@ -795,6 +863,11 @@ void Interpreter::statement_analyzer(std::string statement)
 		{
 			//as it is just one line of code, there is no need to create a separate function 
 			system("PAUSE");
+		}
+		//all others
+		else
+		{
+			check_for_assignment_statement(level1);
 		}
 		
 		//change the global:"g_previous_statement". we need it for other functions

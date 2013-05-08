@@ -55,3 +55,15 @@ void VarTable::change_var(std::string name, InternalVariable val)
 		}
 	}
 }
+
+void VarTable::add_to_var(std::string name, int val)
+{
+	for (int i = 0; i < this->var_count; ++i)
+	{
+		if (this->var_name_table[i].compare(name) == 0)
+		{
+			this->var_table[i] = this->var_table[i] + (long long)val;
+			return;
+		}
+	}
+}

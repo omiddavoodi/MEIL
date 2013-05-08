@@ -6,14 +6,14 @@ if (h <= 1)
 }
 if (h > 1)
 {
-	for (var i = h; i > 1; var i = i - 1)
+	for (var i = h ; i > 1 ; --i)
 	{
 		var sut = 0;
-		for (var j = 2; j <= h; var j = j + 1)
+		for (var j = 2 ; j <= h ; ++j)
 		{
 			if ((i!=j) && (i%j == 0))
 			{
-				var sut = 1;
+				sut = 1;
 			}
 		}
 		if (sut == 0)

@@ -2,14 +2,14 @@ var x = 1;
 var y = 1;
 while (x <= 10)
 {
-	var y = 1;
+	y = 1;
 	while (y <= 10)
 	{
 		print x*y;
 		print " ";
-		var y = y + 1;
+		++y;
 	}
-	var x = x + 1;
+	++x;
 	print "\n";
 }
 pause;
